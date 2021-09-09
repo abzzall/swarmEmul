@@ -5,6 +5,7 @@ import numpy
 from numpy import pi
 from constants import *
 
+
 class Action:
 
 	def __init__(self, x, y):
@@ -52,13 +53,13 @@ class Env:
 		self.yL = leader_y
 		self.robot_radius = robot_radius
 		self.sensor_detection_count = sensor_detection_count
-		self.buffer_size=buffer_size
+		self.buffer_size = buffer_size
 
-		self.v_history=numpy.zeros((self.buffer_size, self.N, 4, 2))
-		self.pose_history=numpy.zeros((self.buffer_size, self.N+1, 2))
-		self.angle_history=numpy.zeros((self.buffer_size, self.N))
-		self.detection_history=numpy.zeros((self.buffer_size, self.N, self.sensor_detection_count))
-		self.dead_history=numpy.full((self.buffer_size, self.N), True)
+		self.v_history = numpy.zeros((self.buffer_size, self.N, 4, 2))
+		self.pose_history = numpy.zeros((self.buffer_size, self.N + 1, 2))
+		self.angle_history = numpy.zeros((self.buffer_size, self.N))
+		self.detection_history = numpy.zeros((self.buffer_size, self.N, self.sensor_detection_count))
+		self.dead_history = numpy.full((self.buffer_size, self.N), True)
 		self.reset()
 
 	def reset(self):
@@ -81,20 +82,21 @@ class Env:
 		self.walls.append(obstacle)
 
 		for i in range(self.N):
-			agent = Agent(i,
+			agent = Agent(
+				i,
 				self.xL + self.Dx[i], self.yL + self.Dy[i], self.Dx[i], self.Dy[i], radius=self.robot_radius,
 				sensor_detection_count=self.sensor_detection_count
-			)
+				)
 			self.agents.append(agent)
 		self.t = 0
 		self.is_done = False
-		self.v_history[:]=0
-		self.pose_history[:]=0
-		self.angle_history[:]=0
-		self.detection_history[:]=0
-		self.dead_history[:]=True
+		self.v_history[:] = 0
+		self.pose_history[:] = 0
+		self.angle_history[:] = 0
+		self.detection_history[:] = 0
+		self.dead_history[:] = True
 
-	def episode_step_by_step(self, w1,w2, w3):
+	def episode_step_by_step(self, w1, w2, w3):
 		self.reset()
 		yield self.is_done
 		while not self.is_done:
@@ -120,10 +122,10 @@ class Env:
 			v3 = v_goal(self.xL, self.yL, self.xG, self.yG, w3)
 			v = w1 * v1 + v2 + v3
 			agent.move(v)
-			self.v_history[self.t, agent.id, :,:]=[[v1.x, v1.y], [v2.x, v2.y], [v3.x, v3.y], [v.x, v.y]]
-			self.pose_history[self.t, agent.id, :]=[agent.x, agent.y]
-			self.angle_history[self.t, agent.id]=agent.angle
-			self.dead_history[self.t, agent.id]=False
+			self.v_history[self.t, agent.id, :, :] = [[v1.x, v1.y], [v2.x, v2.y], [v3.x, v3.y], [v.x, v.y]]
+			self.pose_history[self.t, agent.id, :] = [agent.x, agent.y]
+			self.angle_history[self.t, agent.id] = agent.angle
+			self.dead_history[self.t, agent.id] = False
 			if v.active():
 				moving = True
 
@@ -135,11 +137,14 @@ class Env:
 		self.reset_leader()
 
 	def reset_leader(self):
-		self.xL, self.yL = virtual_leader_position(self.agents)
+		xl, yl = virtual_leader_position(self.agents)
 		if self.xL is None:
-			self.is_done=True
+			self.is_done = True
 		else:
-			self.pose_history[self.t, self.N, :]=[self.xL, self.yL ]
+			self.xL = xl
+			self.yL = yl
+			self.pose_history[self.t, self.N, :] = [self.xL, self.yL]
+
 	def check_dead(self):
 		for i in range(self.N):
 			agent = self.agents[i]
@@ -179,7 +184,8 @@ class Env:
 					agent.detected = True
 				else:
 					agent.obs[j] = 0
-			self.detection_history[self.t, agent.id, :]=agent.obs
+			self.detection_history[self.t, agent.id, :] = agent.obs
+
 
 class Drawable:
 	def __init__(self, x, y, length_x, length_y):
@@ -336,7 +342,7 @@ class Drawable:
 class Agent(Drawable):
 	id = 0
 
-	def __init__(self,id, x, y, dx, dy, angle=0, radius=ROBOT_RADIUS, sensor_detection_count=SENSOR_DETECTION_COUNT):
+	def __init__(self, id, x, y, dx, dy, angle=0, radius=ROBOT_RADIUS, sensor_detection_count=SENSOR_DETECTION_COUNT):
 		self.angle = angle
 		self.is_dead = False
 		self.sensor_detection_count = sensor_detection_count
@@ -400,7 +406,7 @@ class Wall(Drawable):
 
 def lidar_angles(sensor_detection_count=SENSOR_DETECTION_COUNT, offset=0):
 	return [
-		normAngleMinusPiPi(offset-pi + i * 2 * pi / sensor_detection_count)
+		normAngleMinusPiPi(offset - pi + i * 2 * pi / sensor_detection_count)
 		for i in
 		range(sensor_detection_count)]
 
@@ -416,7 +422,7 @@ def virtual_leader_position(agents: List[Agent]):
 			y.append(agent.y)
 			dx.append(agent.dx)
 			dy.append(agent.dy)
-	if len(x)==0:
+	if len(x) == 0:
 		return None, None
 	x = numpy.array(x)
 	y = numpy.array(y)
