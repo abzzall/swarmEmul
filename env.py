@@ -11,7 +11,6 @@ from numpy import pi
 
 UNIT=1
 ROBOT_RADIUS=UNIT/2
-FPS=60
 SENSOR_RANGE= 3
 SENSOR_DETECTION_COUNT = 12
 
@@ -21,11 +20,6 @@ YL=15
 
 VIZ_SIZE=200
 MIN_RADIUS=5
-
-LIDAR_SENSOR_ANGLES = [
-		-pi+i*2*pi/SENSOR_DETECTION_COUNT
-		for i in
-		range(SENSOR_DETECTION_COUNT)]
 
 ROBOT_NUMBER=9
 DX=[-SENSOR_RANGE - ROBOT_RADIUS, 0, SENSOR_RANGE + ROBOT_RADIUS, -SENSOR_RANGE - ROBOT_RADIUS, 0, SENSOR_RANGE + ROBOT_RADIUS, -ROBOT_RADIUS - SENSOR_RANGE, 0, ROBOT_RADIUS + SENSOR_RANGE];
@@ -41,7 +35,11 @@ W1=5
 W2=1
 W3=1
 
-
+def lidar_angles(sensor_detection_count=SENSOR_DETECTION_COUNT):
+	return [
+		-pi+i*2*pi/sensor_detection_count
+		for i in
+		range(sensor_detection_count)]
 class Action:
 	def __init__(self, x, y):
 		self.x = x
@@ -64,7 +62,7 @@ class Action:
 		return self.x==other.x and self.y==other.y
 
 class Visualizer:
-	def __init__(self, width=VIZ_SIZE, height=VIZ_SIZE, xG=GOAL_X, yG=GOAL_Y, N=ROBOT_NUMBER, obstacle_pos=OBSTACLE_POS, Dx=DX, Dy=DY, sensor_range=SENSOR_RANGE, xL=XL, yL=YL):
+	def __init__(self, width=VIZ_SIZE, height=VIZ_SIZE, xG=GOAL_X, yG=GOAL_Y, N=ROBOT_NUMBER, obstacle_pos=OBSTACLE_POS, Dx=DX, Dy=DY, sensor_range=SENSOR_RANGE, xL=XL, yL=YL, robot_radius=ROBOT_RADIUS, sensor_detection_count=SENSOR_DETECTION_COUNT):
 		# pygame.init()
 		self.width = width
 		self.height = height
@@ -78,6 +76,8 @@ class Visualizer:
 		self.sensor_range=sensor_range
 		self.xL=xL
 		self.yL=yL
+		self.robot_radius=robot_radius
+		self.sensor_detection_count=sensor_detection_count
 
 	def reset(self):
 		self.isDone = False
@@ -100,7 +100,7 @@ class Visualizer:
 		self.walls.append(obstacle)
 
 		for i in range(self.N):
-			agent=Agent(self.xL + self.Dx[i], self.yL + self.Dy[i], self.Dx[i], self.Dy[i])
+			agent=Agent(self.xL + self.Dx[i], self.yL + self.Dy[i], self.Dx[i], self.Dy[i], radius=self.robot_radius, sensor_detection_count=self.sensor_detection_count)
 			self.agents.append(agent)
 		self.t=0
 
@@ -114,7 +114,7 @@ class Visualizer:
 			agent = self.agents[i]
 			if agent.isdead:
 				continue
-			v1=vAvoidObsMinAngle(agent, self.sensor_range, [ agent.get_absolute_angle(angle) for angle in LIDAR_SENSOR_ANGLES ])
+			v1=vAvoidObsMinAngle(agent, self.sensor_range)
 			v2=vKeepFormation(agent, self.xL, self.yL,  w2)
 			v3=vGoal(self.xL, self.yL, self.xG, self.yG, w3)
 			v=w1*v1+v2+v3
@@ -165,14 +165,14 @@ class Visualizer:
 		for i in range(self.N):
 			agent = self.agents[i]
 			agent.detected=False
-			for j,angle in enumerate(LIDAR_SENSOR_ANGLES):
+			for j,angle in enumerate(agent.get_lidar_angles()):
 				min_dist = self.sensor_range + 1
 				for drawable in self.agents+self.walls:
 					if drawable != agent:
 						# nn=agent.get_absolute_angle(angle)
 						dist = drawable.getIntersection(
 							x=agent.x, y=agent.y,
-							angle=agent.get_absolute_angle(angle)
+							angle=angle
 							)
 						if dist == -1:
 							continue
@@ -237,13 +237,11 @@ def normAngleMinusPiPi(angle):
 
 
 class Drawable():
-	scale_koef=1.0
 	min_size=0
 
 	def __init__(self, x, y, lengthX=UNIT, lengthY=UNIT):
 		self.x = x
 		self.y = y
-		# self.rect.center = (x, y)
 		self.lengthX = lengthX
 		self.lengthY = lengthY
 		self.update_pos()
@@ -272,8 +270,6 @@ class Drawable():
 		           self.toY >= drawable.toY)
 
 	def isCollideRect(self, fromX, fromY, toX, toY):
-		# if fromX<0 or fromY<0:
-		# 	raise Exception('minus coord')
 		return self.containsPoint(fromX, fromY) \
 		       or self.containsPoint(fromX, toY) \
 		       or self.containsPoint(toX, toY) \
@@ -448,17 +444,18 @@ def getDistance(x1, y1, x2, y2):
 
 class Agent(Drawable):
 	id=0
-	def __init__(self,  x, y,dx, dy,  angle=0):
+	def __init__(self,  x, y,dx, dy,  angle=0, radius=ROBOT_RADIUS, sensor_detection_count=SENSOR_DETECTION_COUNT):
 		self.angle=angle
 		self.isdead = False
-		self.obs=numpy.zeros(SENSOR_DETECTION_COUNT)
+		self.sensor_detection_count=sensor_detection_count
+		self.obs=numpy.zeros(self.sensor_detection_count)
 		self.detected=False
 		self.dx=dx
 		self.dy=dy
 		self.id=Agent.id
 		Agent.id+=1
-
-		Drawable.__init__(self, x, y, lengthX=ROBOT_RADIUS*2, lengthY=ROBOT_RADIUS*2)
+		self.radius=radius
+		Drawable.__init__(self, x, y, lengthX=self.radius*2, lengthY=self.radius*2)
 		self.update_pos()
 
 	def movePolar(self, step_size, angle):
@@ -483,7 +480,7 @@ class Agent(Drawable):
 		self.update_pos()
 
 	def get_distance(self, drawable):
-		return sqrt((self.x - drawable.x) ** 2 + (self.y - drawable.y) ** 2) - ROBOT_RADIUS
+		return sqrt((self.x - drawable.x) ** 2 + (self.y - drawable.y) ** 2) - self.radius
 
 	def get_rel_angle(self, drawable):
 		if drawable.x == self.x:
@@ -497,6 +494,8 @@ class Agent(Drawable):
 
 	def get_absolute_angle(self, angle):
 		return normAngleMinusPiPi(angle + self.angle)
+	def get_lidar_angles(self):
+		return [ self.get_absolute_angle(angle) for angle in lidar_angles(self.sensor_detection_count) ]
 
 
 class Wall(Drawable):
@@ -526,15 +525,15 @@ def virtual_leader_position(agents: List[Agent]):
 	dy=numpy.array(dy)
 	return numpy.mean(x-dx), numpy.mean(y-dy)
 
-def vAvoidObsMinAngle(agent: Agent, sensor_range, lidar_angles)->Action:
+def vAvoidObsMinAngle(agent: Agent, sensor_range)->Action:
 	if not agent.detected:
 		return Action(0, 0)
 
-	angles=numpy.array(lidar_angles)
+	angles=numpy.array(agent.get_lidar_angles())
 	agent.obs[agent.obs==0]=sensor_range
 	nom=0
 	denom=0
-	for i in range(SENSOR_DETECTION_COUNT):
+	for i in range(len(angles)):
 		nom+=angles[i]*agent.obs[i]
 		denom+=agent.obs[i]
 
