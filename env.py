@@ -1,4 +1,6 @@
 from typing import List
+
+from env import Agent
 from geometry import *
 import numpy
 from numpy import pi
@@ -22,6 +24,7 @@ GOAL_Y = 90
 
 OBSTACLE_POS = (40, 40, 60, 60)
 
+MAX_T=3000
 
 class Action:
 
@@ -53,7 +56,7 @@ class Env:
 			self, width=VIZ_SIZE, height=VIZ_SIZE, goal_x=GOAL_X, goal_y=GOAL_Y, N=ROBOT_NUMBER,
 			obstacle_pos=OBSTACLE_POS,
 			desired_X=DX, desired_Y=DY, sensor_range=SENSOR_RANGE, leader_x=XL, leader_y=YL, robot_radius=ROBOT_RADIUS,
-			sensor_detection_count=SENSOR_DETECTION_COUNT
+			sensor_detection_count=SENSOR_DETECTION_COUNT, buffer_size=MAX_T
 	):
 		# pygame.init()
 		self.width = width
@@ -71,6 +74,13 @@ class Env:
 		self.robot_radius = robot_radius
 		self.sensor_detection_count = sensor_detection_count
 		self.reset()
+		self.buffer_size=buffer_size
+
+		self.v_history=numpy.zeros((self.buffer_size, self.N, 4))
+		self.pose_history=numpy.zeros((self.buffer_size, self.N+1, 2))
+		self.angle_history=numpy.zeros((self.buffer_size, self.N))
+		self.detection_history=numpy.zeros((self.buffer_size, self.N, self.sensor_detection_count))
+		self.dead_history=numpy.full((self.buffer_size, self.N), True)
 
 	def reset(self):
 		self.is_done = False
@@ -99,6 +109,11 @@ class Env:
 			self.agents.append(agent)
 		self.t = 0
 		self.is_done = False
+		self.v_history[:]=0
+		self.pose_history[:]=0
+		self.angle_history[:]=0
+		self.detection_history[:]=0
+		self.dead_history[:]=True
 
 	def play_step(self, w1, w2, w3):
 		# for t in range(FPS):
@@ -114,6 +129,10 @@ class Env:
 			v3 = v_goal(self.xL, self.yL, self.xG, self.yG, w3)
 			v = w1 * v1 + v2 + v3
 			agent.move(v)
+			self.v_history[self.t, agent.id, :]=[v1, v2, v3, v]
+			self.pose_history[self.t, agent.id, :]=[agent.x, agent.y]
+			self.angle_history[self.t, agent.id]=agent.angle
+			self.dead_history[self.t, agent.id]=False
 			if v.active():
 				moving = True
 
@@ -126,7 +145,7 @@ class Env:
 
 	def reset_leader(self):
 		self.xL, self.yL = virtual_leader_position(self.agents)
-
+		self.pose_history[self.t, self.N, :]=[self.xL, self.yL ]
 	def check_dead(self):
 		for i in range(self.N):
 			agent = self.agents[i]
@@ -166,7 +185,7 @@ class Env:
 					agent.detected = True
 				else:
 					agent.obs[j] = 0
-
+			self.detection_history[self.t, agent.id, :]=agent.obs
 
 class Drawable:
 	def __init__(self, x, y, length_x, length_y):
@@ -373,7 +392,7 @@ class Agent(Drawable):
 		return normAngleMinusPiPi(angle + self.angle)
 
 	def get_lidar_angles(self):
-		return [self.get_absolute_angle(angle) for angle in lidar_angles(self.sensor_detection_count)]
+		return lidar_angles(self.sensor_detection_count, self.angle)
 
 
 class Wall(Drawable):
@@ -386,9 +405,9 @@ class Wall(Drawable):
 		)
 
 
-def lidar_angles(sensor_detection_count=SENSOR_DETECTION_COUNT):
+def lidar_angles(sensor_detection_count=SENSOR_DETECTION_COUNT, offset=0):
 	return [
-		-pi + i * 2 * pi / sensor_detection_count
+		offset-pi + i * 2 * pi / sensor_detection_count
 		for i in
 		range(sensor_detection_count)]
 
