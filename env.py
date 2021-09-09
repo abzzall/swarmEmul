@@ -1,30 +1,9 @@
 from typing import List
 
-from env import Agent
 from geometry import *
 import numpy
 from numpy import pi
-
-ROBOT_RADIUS = 0.25
-SENSOR_RANGE = 3
-SENSOR_DETECTION_COUNT = 12
-
-XL = 50
-YL = 15
-
-VIZ_SIZE = 200
-ROBOT_NUMBER = 9
-DX = [-SENSOR_RANGE - ROBOT_RADIUS, 0, SENSOR_RANGE + ROBOT_RADIUS, -SENSOR_RANGE - ROBOT_RADIUS, 0,
-      SENSOR_RANGE + ROBOT_RADIUS, -ROBOT_RADIUS - SENSOR_RANGE, 0, ROBOT_RADIUS + SENSOR_RANGE]
-DY = [-SENSOR_RANGE - ROBOT_RADIUS, -SENSOR_RANGE - ROBOT_RADIUS, -SENSOR_RANGE - ROBOT_RADIUS, 0, 0, 0,
-      SENSOR_RANGE + ROBOT_RADIUS, SENSOR_RANGE + ROBOT_RADIUS, SENSOR_RANGE + ROBOT_RADIUS]
-
-GOAL_X = 50
-GOAL_Y = 90
-
-OBSTACLE_POS = (40, 40, 60, 60)
-
-MAX_T=3000
+from constants import *
 
 class Action:
 
@@ -53,7 +32,7 @@ class Action:
 
 class Env:
 	def __init__(
-			self, width=VIZ_SIZE, height=VIZ_SIZE, goal_x=GOAL_X, goal_y=GOAL_Y, N=ROBOT_NUMBER,
+			self, width=ENV_SIZE, height=ENV_SIZE, goal_x=GOAL_X, goal_y=GOAL_Y, N=ROBOT_NUMBER,
 			obstacle_pos=OBSTACLE_POS,
 			desired_X=DX, desired_Y=DY, sensor_range=SENSOR_RANGE, leader_x=XL, leader_y=YL, robot_radius=ROBOT_RADIUS,
 			sensor_detection_count=SENSOR_DETECTION_COUNT, buffer_size=MAX_T
@@ -73,14 +52,14 @@ class Env:
 		self.yL = leader_y
 		self.robot_radius = robot_radius
 		self.sensor_detection_count = sensor_detection_count
-		self.reset()
 		self.buffer_size=buffer_size
 
-		self.v_history=numpy.zeros((self.buffer_size, self.N, 4))
+		self.v_history=numpy.zeros((self.buffer_size, self.N, 4, 2))
 		self.pose_history=numpy.zeros((self.buffer_size, self.N+1, 2))
 		self.angle_history=numpy.zeros((self.buffer_size, self.N))
 		self.detection_history=numpy.zeros((self.buffer_size, self.N, self.sensor_detection_count))
 		self.dead_history=numpy.full((self.buffer_size, self.N), True)
+		self.reset()
 
 	def reset(self):
 		self.is_done = False
@@ -102,7 +81,7 @@ class Env:
 		self.walls.append(obstacle)
 
 		for i in range(self.N):
-			agent = Agent(
+			agent = Agent(i,
 				self.xL + self.Dx[i], self.yL + self.Dy[i], self.Dx[i], self.Dy[i], radius=self.robot_radius,
 				sensor_detection_count=self.sensor_detection_count
 			)
@@ -114,6 +93,18 @@ class Env:
 		self.angle_history[:]=0
 		self.detection_history[:]=0
 		self.dead_history[:]=True
+
+	def episode_step_by_step(self, w1,w2, w3):
+		self.reset()
+		yield self.is_done
+		while not self.is_done:
+			self.play_step(w1, w2, w3)
+			yield self.is_done
+
+	def episode(self, w1, w2, w3):
+		self.reset()
+		while not self.is_done:
+			self.play_step(w1, w2, w3)
 
 	def play_step(self, w1, w2, w3):
 		# for t in range(FPS):
@@ -129,7 +120,7 @@ class Env:
 			v3 = v_goal(self.xL, self.yL, self.xG, self.yG, w3)
 			v = w1 * v1 + v2 + v3
 			agent.move(v)
-			self.v_history[self.t, agent.id, :]=[v1, v2, v3, v]
+			self.v_history[self.t, agent.id, :,:]=[[v1.x, v1.y], [v2.x, v2.y], [v3.x, v3.y], [v.x, v.y]]
 			self.pose_history[self.t, agent.id, :]=[agent.x, agent.y]
 			self.angle_history[self.t, agent.id]=agent.angle
 			self.dead_history[self.t, agent.id]=False
@@ -145,7 +136,10 @@ class Env:
 
 	def reset_leader(self):
 		self.xL, self.yL = virtual_leader_position(self.agents)
-		self.pose_history[self.t, self.N, :]=[self.xL, self.yL ]
+		if self.xL is None:
+			self.is_done=True
+		else:
+			self.pose_history[self.t, self.N, :]=[self.xL, self.yL ]
 	def check_dead(self):
 		for i in range(self.N):
 			agent = self.agents[i]
@@ -342,7 +336,7 @@ class Drawable:
 class Agent(Drawable):
 	id = 0
 
-	def __init__(self, x, y, dx, dy, angle=0, radius=ROBOT_RADIUS, sensor_detection_count=SENSOR_DETECTION_COUNT):
+	def __init__(self,id, x, y, dx, dy, angle=0, radius=ROBOT_RADIUS, sensor_detection_count=SENSOR_DETECTION_COUNT):
 		self.angle = angle
 		self.is_dead = False
 		self.sensor_detection_count = sensor_detection_count
@@ -350,8 +344,7 @@ class Agent(Drawable):
 		self.detected = False
 		self.dx = dx
 		self.dy = dy
-		self.id = Agent.id
-		Agent.id += 1
+		self.id = id
 		self.radius = radius
 		Drawable.__init__(self, x, y, length_x=self.radius * 2, length_y=self.radius * 2)
 		self.update_pos()
@@ -407,7 +400,7 @@ class Wall(Drawable):
 
 def lidar_angles(sensor_detection_count=SENSOR_DETECTION_COUNT, offset=0):
 	return [
-		offset-pi + i * 2 * pi / sensor_detection_count
+		normAngleMinusPiPi(offset-pi + i * 2 * pi / sensor_detection_count)
 		for i in
 		range(sensor_detection_count)]
 
@@ -423,6 +416,8 @@ def virtual_leader_position(agents: List[Agent]):
 			y.append(agent.y)
 			dx.append(agent.dx)
 			dy.append(agent.dy)
+	if len(x)==0:
+		return None, None
 	x = numpy.array(x)
 	y = numpy.array(y)
 	dx = numpy.array(dx)
