@@ -1,7 +1,5 @@
 from math import atan
-from math import ceil
 from math import cos
-from math import floor
 from math import sin
 from math import sqrt
 from math import tan
@@ -150,12 +148,16 @@ class Visualizer:
 			if agent.isdead:
 				continue
 
-			for drawable in self.agents+self.walls:
+			for drawable in self.agents:
 				if drawable != agent and agent.isCollide(drawable):
-					agent.set_dead()
-					if isinstance(drawable, Agent):
-						drawable.set_dead()
+					agent.isdead=True
+					drawable.isdead=True
 					break
+			if not agent.isdead:
+				for drawable in self.walls:
+					if drawable != agent and agent.isCollide(drawable):
+						agent.isdead = True
+						break
 
 
 
@@ -458,9 +460,6 @@ class Agent(Drawable):
 
 		Drawable.__init__(self, x, y, lengthX=ROBOT_RADIUS*2, lengthY=ROBOT_RADIUS*2)
 		self.update_pos()
-
-	def set_dead(self):
-		self.isdead=True
 
 	def movePolar(self, step_size, angle):
 		self.angle=angle
