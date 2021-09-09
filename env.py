@@ -67,7 +67,7 @@ class Env:
 		return [(0, 0, 1, height), (0, height - 1, width, height), (width - 1, 0, width, height), (0, 0, width - 1, 1)]
 
 	def wall_coords(self):
-		return Env.external_wall_coords(self.width, self.height)+[self.obstacle_pos]
+		return Env.external_wall_coords(self.width, self.height) + [self.obstacle_pos]
 
 	def reset(self):
 		self.is_done = False
@@ -83,7 +83,7 @@ class Env:
 				i,
 				self.xL + self.Dx[i], self.yL + self.Dy[i], self.Dx[i], self.Dy[i], radius=self.robot_radius,
 				sensor_detection_count=self.sensor_detection_count
-				)
+			)
 			self.agents.append(agent)
 		self.t = 0
 		self.is_done = False
@@ -129,7 +129,6 @@ class Env:
 
 		if not moving:
 			self.is_done = True
-
 
 		self.t += 1
 
@@ -182,6 +181,23 @@ class Env:
 				else:
 					agent.obs[j] = 0
 			self.detection_history[self.t, agent.id, :] = agent.obs
+
+	def save_episode(self, file_name):
+		numpy.savez(
+			file_name, v=self.v_history[:self.t, :, :, :], pose=self.pose_history[:self.t, :, :],
+			angle=self.angle_history[:self.t, :], detection=self.detection_history[:self.t, :, :],
+			dead=self.dead_history[:self.t, :], width=self.width, height=self.height, goal_x=self.xG, goal_y=self.yG,
+			wall=self.wall_coords(), radius=self.robot_radius, dx=self.Dx, dy=self.Dy, N=self.N, t=self.t,
+			leader_x=self.xL, leader_y=self.yL
+		)
+
+	@staticmethod
+	def load_episode_history(file_name):
+		history = numpy.load(file_name)
+		return history['v'], history['pose'], history['angle'], history['detection'], history['dead'], \
+		       history['width'], \
+		       history['height'], history['goal_x'], history['goal_y'], history['wall'], history['radius'], history[
+			       'dx'], history['dy'], history['N'], history['t'], history['leader_x'], history['leader_y']
 
 
 class Drawable:

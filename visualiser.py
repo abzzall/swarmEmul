@@ -124,11 +124,12 @@ def draw_env(env: Env, display: Surface, min_agent_size=0):
 	surface = env_surface(env, scale_koef, min_agent_size)
 	blit_surface(surface, display, display.get_width() / 2, display.get_height() / 2)
 
+
 def clear_draw_env_(
 		display: Surface, width, height, goal_x, goal_y, wall_poses, poses, angles, deads, radius, N, min_agent_size=0
 ):
 	display.fill(WHITE)
-	draw_env_(display,width, height, goal_x, goal_y, wall_poses, poses, angles, deads, radius, N,  min_agent_size)
+	draw_env_(display, width, height, goal_x, goal_y, wall_poses, poses, angles, deads, radius, N, min_agent_size)
 	# pygame.display.update()
 	pygame.display.flip()
 
@@ -222,23 +223,35 @@ def episode_replay(
 					fps = 1.1 * fps
 
 		if not paused:
-			i += 1
 			clear_draw_env_(
-					screen, env_width, env_height, goal_x, goal_y, wall_poses, pose_history[i, :, :],
-					angle_history[i, :], dead_history[i, :], radius, N
-				)
-
+				screen, env_width, env_height, goal_x, goal_y, wall_poses, pose_history[i, :, :],
+				angle_history[i, :], dead_history[i, :], radius, N
+			)
+			i += 1
 
 		clock.tick(fps)
 	pygame.quit()
 
 
+def episode_replay_from_file(file_name, window_width, window_height, fps=FPS, min_robot_size=0):
+	V, poses, angles, detections, dead, env_width, env_height, goal_x, goal_y, wall, radius, dx, dy, N, \
+	t, _, _  = Env.load_episode_history(
+		file_name
+		)
+	episode_replay(
+		t, V, poses, angles, detections, dead, env_width, env_height, window_width, window_height, goal_x, goal_y,
+		wall,
+		radius, dx, dy, N, min_agent_size = min_robot_size, fps=fps
+		)
+
+
+# history['v'], history['pose'], history['angle'], history['detection'], history['dead'], \
+# history['width'], \
+# history['height'], history['goal_x'], history['goal_y'], history['wall'], history['radius'], history[
+# 	'dx'], history['dy'], history['N'], history['t']
 if __name__ == '__main__':
 	# episode_gui_(5, 1, 1)
 	env = Env()
 	env.episode(5, 1, 1)
-	episode_replay(
-		env.t, env.v_history, env.pose_history, env.angle_history, env.detection_history, env.dead_history, env.width,
-		env.height, WINDOW_SIZE, WINDOW_SIZE, env.xG, env.yG, env.wall_coords(), env.robot_radius, env.Dx, env.Dy,
-		env.N, fps=FPS
-		)
+	env.save_episode('test')
+	episode_replay_from_file('test.npz', WINDOW_SIZE, WINDOW_SIZE)
