@@ -129,14 +129,14 @@ def clear_draw_env_(
 ):
 	display.fill(WHITE)
 	draw_env_(display,width, height, goal_x, goal_y, wall_poses, poses, angles, deads, radius, N,  min_agent_size)
-	pygame.display.update()
+	# pygame.display.update()
 	pygame.display.flip()
 
 
 def clear_draw_env(env: Env, display: Surface, min_agent_size=0):
 	display.fill(WHITE)
 	draw_env(env, display, min_agent_size)
-	pygame.display.update()
+	# pygame.display.update()
 	pygame.display.flip()
 
 
@@ -164,9 +164,9 @@ def episode_gui(env: Env, window_width, window_height, w1, w2, w3, min_agent_siz
 					fps = 0.9 * fps
 				elif event.key == K_DOWN:
 					fps = 1.1 * fps
-			if not paused:
-				env.play_step(w1, w2, w3)
-				clear_draw_env(env, screen, min_agent_size)
+		if not paused:
+			env.play_step(w1, w2, w3)
+			clear_draw_env(env, screen, min_agent_size)
 
 		clock.tick(fps)
 	pygame.quit()
@@ -221,9 +221,9 @@ def episode_replay(
 				elif event.key == K_DOWN:
 					fps = 1.1 * fps
 
-			if not paused:
-				i += 1
-				clear_draw_env_(
+		if not paused:
+			i += 1
+			clear_draw_env_(
 					screen, env_width, env_height, goal_x, goal_y, wall_poses, pose_history[i, :, :],
 					angle_history[i, :], dead_history[i, :], radius, N
 				)

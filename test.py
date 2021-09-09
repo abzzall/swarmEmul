@@ -404,7 +404,7 @@ class Drawable(pygame.sprite.Sprite):
 		       or drawable.containsPoint(self.toX, self.fromY) \
 		       or (self.fromX <= drawable.fromX and self.toX >= drawable.toX and self.fromY >= drawable.fromY and \
 		           self.toY <= drawable.toY) \
-		       or (self.fromX >= drawable.fromX and self.toX <= drawable.toX and self.fromY <= drawable.fromY and \
+		       or (self.fromX >= drawable.from_x and self.toX <= drawable.toX and self.fromY <= drawable.from_y and \
 		           self.toY >= drawable.toY)
 
 	def isCollideRect(self, fromX, fromY, toX, toY):
