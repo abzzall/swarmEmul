@@ -1,10 +1,5 @@
-from math import atan
-from math import cos
-from math import sin
-from math import sqrt
-from math import tan
 from typing import List
-
+from geometry import *
 import numpy
 from numpy import pi
 
@@ -192,53 +187,7 @@ class Visualizer:
 				self.agent_distances[i][j] = d
 				self.agent_distances[j][i] = d
 
-
-def angleWithXAxis(x, y):
-	if x > 0:
-		return atan(y / x)
-	elif x==0:
-		if y>0:
-			return pi/2
-		elif y<0:
-			return -pi/2
-		else:
-			return 0
-	else:
-		if y < 0:
-			return pi - atan(y / x)
-		else:
-			return pi + atan(y / x)
-
-
-def segmentAngleWithXAxis(x1, y1, x2, y2):
-	if y1 == y2:
-		if x2 >= x1:
-			return 0
-		else:
-			return -pi
-	return angleWithXAxis(x2 - x1, y2 - y1)
-
-
-def calculateAngle(x1, y1, x2, y2, x3, y3):
-	return normAngleMinusPiPi(segmentAngleWithXAxis(x2, y2, x1, y1) - segmentAngleWithXAxis(x2, y2, x3, y3))
-
-
-def normAngleMinusPiPi(angle):
-	if angle <= pi and angle >= -pi:
-		return angle
-	elif angle < -pi:
-		while angle < -pi:
-			angle = angle + 2 * pi
-		return angle
-	else:
-		while angle > pi:
-			angle = angle - 2 * pi
-		return angle
-
-
 class Drawable():
-	min_size=0
-
 	def __init__(self, x, y, lengthX=UNIT, lengthY=UNIT):
 		self.x = x
 		self.y = y
@@ -326,8 +275,6 @@ class Drawable():
 		k = tan(angle)
 		b = y - k * x
 		if angle < -pi / 2:
-			# if self.fromX>x or self.fromY>y:
-			# 	return -1
 			if self.toX < x:
 				yIntersection = k * self.toX + b
 				if self.fromY <= yIntersection <= self.toY:
@@ -432,15 +379,6 @@ class Drawable():
 	@toY.setter
 	def toY(self, value):
 		self._toY = value
-
-
-def getIntersectionWithX(k, b, x):
-	return k * x + b
-
-
-def getDistance(x1, y1, x2, y2):
-	return sqrt((x1 - x2) ** 2 + (y1 - y2) ** 2)
-
 
 class Agent(Drawable):
 	id=0
