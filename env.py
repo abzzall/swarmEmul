@@ -62,24 +62,21 @@ class Env:
 		self.dead_history = numpy.full((self.buffer_size, self.N), True)
 		self.reset()
 
+	@staticmethod
+	def external_wall_coords(width, height):
+		return [(0, 0, 1, height), (0, height - 1, width, height), (width - 1, 0, width, height), (0, 0, width - 1, 1)]
+
+	def wall_coords(self):
+		return Env.external_wall_coords(self.width, self.height)+[self.obstacle_pos]
+
 	def reset(self):
 		self.is_done = False
 		self.agents = []
 		self.walls = []
-		# external walls
-		wall1 = Wall(0, 0, 1, self.height)
-		wall2 = Wall(0, self.height - 1, self.width, self.height)
-		wall3 = Wall(self.width - 1, 0, self.width, self.height)
-		wall4 = Wall(0, 0, self.width - 1, 1)
-
-		from_x, from_y, to_x, to_y = self.obstacle_pos
-		obstacle = Wall(from_x, from_y, to_x, to_y)
-
-		self.walls.append(wall1)
-		self.walls.append(wall2)
-		self.walls.append(wall3)
-		self.walls.append(wall4)
-		self.walls.append(obstacle)
+		for wall_coord in self.wall_coords():
+			from_x, from_y, to_x, to_y = wall_coord
+			wall = Wall(from_x, from_y, to_x, to_y)
+			self.walls.append(wall)
 
 		for i in range(self.N):
 			agent = Agent(
@@ -112,9 +109,13 @@ class Env:
 		# for t in range(FPS):
 		self.observe()
 		moving = False
-		self.t += 1
+		self.check_dead()
+		self.reset_leader()
 		for i in range(self.N):
 			agent = self.agents[i]
+			self.pose_history[self.t, agent.id, :] = [agent.x, agent.y]
+			self.angle_history[self.t, agent.id] = agent.angle
+			self.dead_history[self.t, agent.id] = False
 			if agent.is_dead:
 				continue
 			v1 = v_avoid_obs_min_angle(agent, self.sensor_range)
@@ -123,18 +124,14 @@ class Env:
 			v = w1 * v1 + v2 + v3
 			agent.move(v)
 			self.v_history[self.t, agent.id, :, :] = [[v1.x, v1.y], [v2.x, v2.y], [v3.x, v3.y], [v.x, v.y]]
-			self.pose_history[self.t, agent.id, :] = [agent.x, agent.y]
-			self.angle_history[self.t, agent.id] = agent.angle
-			self.dead_history[self.t, agent.id] = False
 			if v.active():
 				moving = True
 
 		if not moving:
 			self.is_done = True
 
-		self.check_dead()
 
-		self.reset_leader()
+		self.t += 1
 
 	def reset_leader(self):
 		xl, yl = virtual_leader_position(self.agents)
