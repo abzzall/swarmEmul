@@ -8,9 +8,7 @@ from math import tan
 from typing import List
 
 import numpy
-import pygame
 from numpy import pi
-from pygame.locals import *
 
 
 UNIT=1
@@ -23,7 +21,6 @@ XL=50
 YL=15
 
 
-WINDOWS_SIZE=1000
 VIZ_SIZE=200
 MIN_RADIUS=5
 
@@ -36,13 +33,6 @@ ROBOT_NUMBER=9
 DX=[-SENSOR_RANGE - ROBOT_RADIUS, 0, SENSOR_RANGE + ROBOT_RADIUS, -SENSOR_RANGE - ROBOT_RADIUS, 0, SENSOR_RANGE + ROBOT_RADIUS, -ROBOT_RADIUS - SENSOR_RANGE, 0, ROBOT_RADIUS + SENSOR_RANGE];
 DY=[-SENSOR_RANGE - ROBOT_RADIUS, -SENSOR_RANGE - ROBOT_RADIUS, -SENSOR_RANGE - ROBOT_RADIUS, 0, 0, 0, SENSOR_RANGE + ROBOT_RADIUS, SENSOR_RANGE + ROBOT_RADIUS, SENSOR_RANGE + ROBOT_RADIUS];
 
-# colors
-WHITE = (255, 255, 255)
-BLACK = (0, 0, 0)
-RED = (255, 0, 0)
-GREEN = (0, 255, 0)
-BLUE = (0, 0, 255)
-YELLOW = (255, 255, 0)
 
 GOAL_X=50
 GOAL_Y=90
@@ -76,77 +66,23 @@ class Action:
 		return self.x==other.x and self.y==other.y
 
 class Visualizer:
-	def __init__(self, width=VIZ_SIZE, height=VIZ_SIZE, xG=GOAL_X, yG=GOAL_Y, N=ROBOT_NUMBER, obstacle_pos=OBSTACLE_POS, Dx=DX, Dy=DY, sensor_range=SENSOR_RANGE, xL=XL, yL=YL, scale_koef=1.0):
+	def __init__(self, width=VIZ_SIZE, height=VIZ_SIZE, xG=GOAL_X, yG=GOAL_Y, N=ROBOT_NUMBER, obstacle_pos=OBSTACLE_POS, Dx=DX, Dy=DY, sensor_range=SENSOR_RANGE, xL=XL, yL=YL):
 		# pygame.init()
 		self.width = width
 		self.height = height
-		self.scale_koef = scale_koef
-		Drawable.scale_koef=scale_koef
-		# init display
-		self.display = pygame.Surface((self.get_shown_width(), self.get_shown_height()))
-
-		# pygame.display.set_caption('main')
-		self.all_sprite_group = pygame.sprite.Group()
-		# self.reset()
-		pygame.display.update()
 
 		self.xG=xG
 		self.yG=yG
-		self.goalImg=pygame.image.load('img/goal.png')
-		self.goalRect=self.goalImg.get_rect()
 		self.obstacle_pos=obstacle_pos
 		self.N=N
 		self.Dx=Dx
 		self.Dy=Dy
 		self.sensor_range=sensor_range
-
-		self.leaderImg = pygame.image.load('img/leader.png')
-		self.leaderRect = self.leaderImg.get_rect()
 		self.xL=xL
 		self.yL=yL
 
-	def get_shown_width(self):
-		return self.width*self.scale_koef
-
-	def get_shown_height(self):
-		return self.height * self.scale_koef
-
-	def rescale(self, new_width, new_height):
-		new_scale_koef=min(new_height/self.height, new_width/self.width)
-		if new_scale_koef!=self.scale_koef:
-			self.set_scaled_koef(new_scale_koef)
-
-	def set_scaled_koef(self, scale_koef):
-		self.scale_koef=scale_koef
-
-		w=floor( self.get_shown_width())
-		h=floor(self.get_shown_height())
-		self.display=pygame.Surface((w,h))#pygame.transform.scale(self.display, (w,h))
-		self.display.get_rect().centerx=self.display.get_rect().x+w//2
-		self.display.get_rect().centery=self.display.get_rect().y+h//2
-		Drawable.scale_koef=scale_koef
-		for drawable in self.all_sprite_group:
-			drawable.rescale()
-		self.reDrawAll()
-
-	def reDrawAll(self):
-		self.reset_screen()
-		self.drawSwarm()
-	def reset_screen(self):
-		self.display.fill((255, 255, 255))
-		self.goalRect.center=(self.xG*self.scale_koef, self.yG*self.scale_koef)
-		self.display.blit(self.goalImg, self.goalRect)
-
 	def reset(self):
-
-		self.old_v=[Action(0,0)]*self.N
-		self.old_v1=[Action(0,0)]*self.N
-		self.old_v2=[Action(0,0)]*self.N
-		self.old_v3=[Action(0,0)]*self.N
-
-		self.reset_screen()
 		self.isDone = False
-		all_sprites = []
 		self.agents = []
 		self.walls = []
 		# external walls
@@ -158,11 +94,6 @@ class Visualizer:
 		from_x, from_y, to_x, to_y=self.obstacle_pos
 		obstacle=Wall(from_x, from_y, to_x, to_y)
 
-		all_sprites.append(wall1)
-		all_sprites.append(wall2)
-		all_sprites.append(wall3)
-		all_sprites.append(wall4)
-		all_sprites.append(obstacle)
 
 		self.walls.append(wall1)
 		self.walls.append(wall2)
@@ -172,26 +103,9 @@ class Visualizer:
 
 		for i in range(self.N):
 			agent=Agent(self.xL + self.Dx[i], self.yL + self.Dy[i], self.Dx[i], self.Dy[i])
-
-			all_sprites.append(agent)
 			self.agents.append(agent)
-		self.all_sprite_group.empty()
-		self.all_sprite_group.add(all_sprites)
-		self.drawSwarm()
 		self.t=0
 
-	def drawSwarm(self):
-		self.drawLeader()
-		self.all_sprite_group.draw(self.display)
-	def drawLeader(self):
-		self.leaderRect.center=(self.xL*self.scale_koef, self.yL*self.scale_koef)
-		self.display.blit(self.leaderImg, self.leaderRect)
-	def print_state(self, actions):
-		for i in range(self.N):
-			print(
-				i, ': ', self.agents[i].x, ', ', self.agents[i].y, ', ', self.agents[i].angle, ', ', self.agents[
-					i].leader_id, 'Action: ', actions[i].velocity, ', ', actions[i].angle
-				)
 
 	def play_step(self, w1, w2, w3):
 		# for t in range(FPS):
@@ -226,34 +140,6 @@ class Visualizer:
 		self.checkDead()
 
 		self.resetLeader()
-		self.reset_screen()
-
-		self.drawLeader()
-
-		# for agent in self.agents:
-		# 	self.display.blit(agent.rect, agent.x, agent.y)
-		self.all_sprite_group.draw(self.display)
-		pygame.display.flip()
-
-
-	def episode(self, w1, w2, w3, show_sensor=False):
-		self.reset()
-
-		while not self.isDone:
-			self.play_step(w1, w2, w3)
-			self.observe()
-			self.show_sensor()
-			pygame.display.update()
-
-		print(self.t)
-
-	def show_sensor(self):
-		for agent in self.agents:
-			for i, range in enumerate(agent.obs):
-				if range<self.sensor_range:
-					angle=agent.get_absolute_angle(LIDAR_SENSOR_ANGLES[i])
-					pygame.draw.line(self.display, BLACK, (agent.x,agent.y ), (agent.x+range*cos(angle), agent.y+range*sin(angle)))
-
 
 	def resetLeader(self):
 		self.xL, self.yL=virtual_leader_position(self.agents)
@@ -264,7 +150,7 @@ class Visualizer:
 			if agent.isdead:
 				continue
 
-			for drawable in self.all_sprite_group.sprites():
+			for drawable in self.agents+self.walls:
 				if drawable != agent and agent.isCollide(drawable):
 					agent.set_dead()
 					if isinstance(drawable, Agent):
@@ -279,7 +165,7 @@ class Visualizer:
 			agent.detected=False
 			for j,angle in enumerate(LIDAR_SENSOR_ANGLES):
 				min_dist = self.sensor_range + 1
-				for drawable in self.all_sprite_group.sprites():
+				for drawable in self.agents+self.walls:
 					if drawable != agent:
 						# nn=agent.get_absolute_angle(angle)
 						dist = drawable.getIntersection(
@@ -348,43 +234,19 @@ def normAngleMinusPiPi(angle):
 		return angle
 
 
-class Drawable(pygame.sprite.Sprite):
+class Drawable():
 	scale_koef=1.0
 	min_size=0
 
-	def __init__(self, x, y, lengthX=UNIT, lengthY=UNIT, shown_width=UNIT, shown_height=UNIT):
-		pygame.sprite.Sprite.__init__(self)
+	def __init__(self, x, y, lengthX=UNIT, lengthY=UNIT):
 		self.x = x
 		self.y = y
 		# self.rect.center = (x, y)
 		self.lengthX = lengthX
 		self.lengthY = lengthY
-		self.shown_width=shown_width
-		self.shown_height=shown_height
-		self.rescale()
-		# self.image = pygame.Surface((shown_width, shown_height))
-		# # self.image.fill(BLACK)
-		# self.rect = self.image.get_rect()
-		# self.redraw()
 		self.update_pos()
 
-	def get_scaled_width(self):
-		return max(floor( self.shown_width*Drawable.scale_koef), type(self).min_size)
-	def get_scaled_height(self):
-			return max(floor(self.shown_height*Drawable.scale_koef), type(self).min_size)
-	def rescale(self):
-		self.image=pygame.Surface((self.get_scaled_width(), self.get_scaled_height()))#pygame.transform.scale(self.image, (self.get_scaled_width(), self.get_scaled_height()))
-		self.rect=self.image.get_rect()
-		self.rect.centerx = self.x*Drawable.scale_koef
-		self.rect.centery = self.y*Drawable.scale_koef
-		self.redraw()
-
-
-	def redraw(self):
-		pass
 	def update_pos(self):
-		self.rect.centerx = self.x*Drawable.scale_koef
-		self.rect.centery = self.y*Drawable.scale_koef
 		self.fromX = self.x - self.lengthX / 2
 		self.fromY = self.y - self.lengthY / 2
 		self.toX = self.x + self.lengthX / 2
@@ -584,7 +446,6 @@ def getDistance(x1, y1, x2, y2):
 
 class Agent(Drawable):
 	id=0
-	min_size=10
 	def __init__(self,  x, y,dx, dy,  angle=0):
 		self.angle=angle
 		self.isdead = False
@@ -595,42 +456,14 @@ class Agent(Drawable):
 		self.id=Agent.id
 		Agent.id+=1
 
-		Drawable.__init__(self, x, y, lengthX=ROBOT_RADIUS*2, lengthY=ROBOT_RADIUS*2, shown_width=ROBOT_RADIUS*4, shown_height=ROBOT_RADIUS*4)
+		Drawable.__init__(self, x, y, lengthX=ROBOT_RADIUS*2, lengthY=ROBOT_RADIUS*2)
 		self.update_pos()
 
-	def redraw(self):
-		self.image.fill(WHITE)
-		self.image.set_colorkey(WHITE)
-		self.image.set_alpha(100)
-		radius=ROBOT_RADIUS*Drawable.scale_koef
-		centerx=self.get_scaled_width()/2
-		centery=self.get_scaled_height()/2
-		color=RED if self.isdead else BLUE
-		endx=centerx * (1 + cos(self.angle))
-		endy=centery * (1 + sin(self.angle))
-
-		pygame.draw.circle(
-				self.image, color, (centerx, centery),
-				radius
-			)
-		pygame.draw.line(
-			self.image, color, (centerx, centery),
-			(centerx * (1 + cos(self.angle)), centery * (1 + sin(self.angle)))
-			)
-
-	def set_angle(self, angle):
-		new_angle=normAngleMinusPiPi( angle)
-		if new_angle!= self.angle:
-			self._set_angle(new_angle)
-	def _set_angle(self, angle):
-		self.angle = angle
-		self.redraw()
 	def set_dead(self):
 		self.isdead=True
-		pygame.draw.circle(self.image, RED, (ROBOT_RADIUS, ROBOT_RADIUS), ROBOT_RADIUS)
 
 	def movePolar(self, step_size, angle):
-		self.set_angle(angle)
+		self.angle=angle
 		self.x += step_size * cos(self.angle)
 		self.y += step_size * sin(self.angle)
 		self.update_pos()
@@ -638,9 +471,7 @@ class Agent(Drawable):
 		self.x+=action.x
 		self.y+=action.y
 		if action.active():
-			angle=angleWithXAxis(action.x, action.y)
-			if angle != self.angle:
-				self.set_angle(angle)
+			self.angle=angleWithXAxis(action.x, action.y)
 		self.update_pos()
 
 	def moveTo(self, newX, newY):
@@ -649,12 +480,8 @@ class Agent(Drawable):
 		angle=segmentAngleWithXAxis(self.x, self.y, newX, newY)
 		self.x=newX
 		self.y=newY
-		if angle!=self.angle:
-			self.set_angle(angle)
+		self.angle = angle
 		self.update_pos()
-
-
-
 
 	def get_distance(self, drawable):
 		return sqrt((self.x - drawable.x) ** 2 + (self.y - drawable.y) ** 2) - ROBOT_RADIUS
@@ -670,7 +497,7 @@ class Agent(Drawable):
 		return atan((drawable.y - self.y) / (drawable.x - self.x))
 
 	def get_absolute_angle(self, angle):
-		return angle#normAngleMinusPiPi(angle + self.angle)
+		return normAngleMinusPiPi(angle + self.angle)
 
 
 class Wall(Drawable):
@@ -679,11 +506,9 @@ class Wall(Drawable):
 		h=toY - fromY
 		Drawable.__init__(
 			self, x=(toX + fromX) / 2, y=(toY + fromY) / 2, lengthX=w,
-			lengthY=h, shown_width=w, shown_height=h
+			lengthY=h
 			)
 
-	def redraw(self):
-		self.image.fill(BLACK)
 
 def virtual_leader_position(agents: List[Agent]):
 	x=[]
@@ -737,63 +562,3 @@ def vGoal(xLeader, yLeader, xGoal, yGoal, w)->Action:
 		return Action( w*xDir/distance, w*yDir/distance)
 	else:
 		return Action( xDir, yDir)
-
-
-
-def perform_event(screen, visualizer):
-	for event in pygame.event.get():
-		if event.type == QUIT:
-			pygame.display.quit()
-		elif event.type == VIDEORESIZE:
-			screen = pygame.display.set_mode(event.size, HWSURFACE | DOUBLEBUF | RESIZABLE)
-			visualizer.rescale(event.w, event.h)
-
-def episode(visualizer,screen, w1, w2, w3):
-	visualizer.reset()
-	yield 0
-	while(not visualizer.isDone):
-		visualizer.play_step(w1, w2, w3)
-		visualizer.show_sensor()
-
-
-
-		yield visualizer.t
-
-def main():
-	screen = pygame.display.set_mode((WINDOWS_SIZE, WINDOWS_SIZE), HWSURFACE | DOUBLEBUF | RESIZABLE)
-	visualizer=Visualizer(width=VIZ_SIZE, height=VIZ_SIZE, scale_koef=WINDOWS_SIZE/VIZ_SIZE)
-	ep=episode(visualizer, screen, W1, W2, W3)
-	clock = pygame.time.Clock()
-	fps=FPS
-	paused=False
-
-	while(True):
-		# perform_event(screen, visualizer)
-		for event in pygame.event.get():
-			if event.type == QUIT:
-				pygame.display.quit()
-			elif event.type == VIDEORESIZE:
-				screen = pygame.display.set_mode(event.size, HWSURFACE | DOUBLEBUF | RESIZABLE)
-				visualizer.rescale(event.w, event.h)
-			elif event.type==KEYDOWN:
-				if event.key==K_SPACE:
-					paused= not paused
-				elif event.key==K_UP:
-					fps=0.9*fps
-				elif event.key==K_DOWN:
-					fps=1.1*fps
-		if not paused:
-			next(ep)
-		screen.fill(WHITE)
-		screen.blit(visualizer.display, (screen.get_width() / 2 - visualizer.display.get_width() / 2,
-		                                 screen.get_height() / 2 - visualizer.display.get_height() / 2)
-		            )
-		pygame.display.update()
-		pygame.display.flip()
-		clock.tick(FPS)
-
-
-
-if __name__=='__main__':
-	main()
-
