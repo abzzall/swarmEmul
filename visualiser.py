@@ -141,7 +141,7 @@ def clear_draw_env(env: Env, display: Surface, min_agent_size=0):
 	pygame.display.flip()
 
 
-def episode_gui(env: Env, window_width, window_height, w1, w2, w3, min_agent_size=0, fps=FPS):
+def episode_gui(env: Env, w1, w2, w3, window_width=WINDOW_SIZE, window_height=WINDOW_SIZE, min_agent_size=0, fps=FPS):
 	pygame.init()
 	screen = pygame.display.set_mode((window_width, window_height), HWSURFACE | DOUBLEBUF | RESIZABLE)
 
@@ -244,14 +244,12 @@ def episode_replay_from_file(file_name, window_width, window_height, fps=FPS, mi
 		radius, dx, dy, N, min_agent_size = min_robot_size, fps=fps
 		)
 
+def current_episode_replay(env:Env, window_width=WINDOW_SIZE, window_height=WINDOW_SIZE, fps=FPS):
+	episode_replay(env.t, env.v_history, env.pose_history, env.angle_history, env.detection_history, env.dead_history, env.width, env.height,window_width,window_height, env.xG, env.yG, env.wall_coords(), env.robot_radius, env.Dx, env.Dy,env.N,fps=fps)
 
-# history['v'], history['pose'], history['angle'], history['detection'], history['dead'], \
-# history['width'], \
-# history['height'], history['goal_x'], history['goal_y'], history['wall'], history['radius'], history[
-# 	'dx'], history['dy'], history['N'], history['t']
 if __name__ == '__main__':
 	# episode_gui_(5, 1, 1)
 	env = Env()
-	env.episode(5, 1, 1)
-	env.save_episode('test')
-	episode_replay_from_file('test.npz', WINDOW_SIZE, WINDOW_SIZE)
+	episode_gui(env, 2.0, 1, 1)
+	# env.save_episode('test')
+	# episode_replay_from_file('test.npz', WINDOW_SIZE, WINDOW_SIZE)

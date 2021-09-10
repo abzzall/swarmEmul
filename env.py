@@ -49,8 +49,8 @@ class Env:
 		self.Dx = desired_X
 		self.Dy = desired_Y
 		self.sensor_range = sensor_range
-		self.xL = leader_x
-		self.yL = leader_y
+		self.xL0 = leader_x
+		self.yL0 = leader_y
 		self.robot_radius = robot_radius
 		self.sensor_detection_count = sensor_detection_count
 		self.buffer_size = buffer_size
@@ -77,7 +77,8 @@ class Env:
 			from_x, from_y, to_x, to_y = wall_coord
 			wall = Wall(from_x, from_y, to_x, to_y)
 			self.walls.append(wall)
-
+		self.xL=self.xL0
+		self.yL=self.yL0
 		for i in range(self.N):
 			agent = Agent(
 				i,
@@ -127,14 +128,14 @@ class Env:
 			if v.active():
 				moving = True
 
-		if not moving:
-			self.is_done = True
 
 		self.t += 1
+		if not moving or self.t==self.buffer_size:
+			self.is_done = True
 
 	def reset_leader(self):
 		xl, yl = virtual_leader_position(self.agents)
-		if self.xL is None:
+		if xl is None or yl is None:
 			self.is_done = True
 		else:
 			self.xL = xl
@@ -458,8 +459,6 @@ def v_avoid_obs_min_angle(agent: Agent, sensor_range) -> Action:
 
 	turn_angle = nom / denom
 	min_distance = min(agent.obs)
-	if min_distance < sensor_range:
-		print(min_distance)
 	k = (sensor_range - min_distance) / sensor_range
 	return Action(k * cos(turn_angle), k * sin(turn_angle))
 
