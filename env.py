@@ -464,6 +464,8 @@ def v_avoid_obs_min_angle(agent: Agent, sensor_range) -> Action:
 
 
 def v_keep_formation(agent: Agent, leader_x, leader_y, w) -> Action:
+	if w==0:
+		return Action(0.0, 0.0)
 	x_dir = leader_x + agent.dx - agent.x
 	y_dir = leader_y + agent.dy - agent.y
 	distance = sqrt(x_dir ** 2 + y_dir ** 2)
@@ -474,6 +476,8 @@ def v_keep_formation(agent: Agent, leader_x, leader_y, w) -> Action:
 
 
 def v_goal(leader_x, leader_y, goal_x, goal_y, w) -> Action:
+	if w==0:
+		return Action(0.0, 0.0)
 	x_dir = goal_x - leader_x
 	y_dir = goal_y - leader_y
 	distance = sqrt(x_dir ** 2 + y_dir ** 2)

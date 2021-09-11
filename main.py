@@ -29,7 +29,11 @@ def meanV(V):
 	Vd = numpy.power(Vx, 2) + numpy.power(Vy, 2)
 	return numpy.mean(numpy.mean(Vd, axis=1))
 
+def save_episode(env:Env, directory, run_number):
+	env.save_episode( os.path.join(directory, str(run_number)))
 
+def show_episode(directory, run_number, window_width=WINDOW_SIZE, window_height=WINDOW_SIZE, fps=FPS):
+	episode_replay_from_file(os.path.join(directory, str(run_number)+'.npz'),window_width, window_height, fps)
 if __name__ == '__main__':
 	directory = 'run'
 	if not os.path.exists(directory):
