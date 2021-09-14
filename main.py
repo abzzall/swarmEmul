@@ -6,7 +6,7 @@ import pandas
 import numpy
 import matplotlib
 from constants import *
-
+from matplotlib import pyplot as plt
 from env import *
 from visualiser import *
 
@@ -76,3 +76,31 @@ if __name__ == '__main__':
 		print(env.t)
 		env.save_episode(os.path.join(directory, str(run)))
 		run = run + 1
+def fill_report_with_graph(directory, input, outs=[4, 5, 6, 7], full_report=full_report, ax_rows=2, ax_cols=2, row_number=101):
+	df=pandas.read_excel(os.path.join(directory, 'report.xls'))
+	df.set_index('id', inplace=True)
+	print(df.columns)
+	fig, ax=plt.subplots(nrows=ax_rows, ncols=ax_cols, figsize=(15, 6))
+	k=0
+	for i in range(ax_rows):
+		for j in range(ax_cols):
+			if k==len(outs):
+				break
+			df.plot(ax=ax[i][j] ,x=df.columns[input] , y=df.columns[outs[k]], marker='o', grid=True)
+			k=k+1
+	writer = pandas.ExcelWriter(full_report, engine='xlsxwriter')
+	df.to_excel(writer, sheet_name=directory)
+	workbook = writer.book
+	sheet=writer.sheets[directory]
+
+	r=1
+	for out in outs:
+		chart = workbook.add_chart({'type': 'line'})
+		chart.add_series({'values': [directory, 1, input, 1+row_number, input],
+						 'categories': [directory, 1,out, 1+row_number,  out],
+						 'marker': {'type': 'automatic'},
+						 'name': df.columns[out]})
+		sheet.insert_chart('K'+str(r), chart, {'x_offset': 25, 'y_offset': 10})
+		r+=20
+	workbook.close()
+	writer.close()

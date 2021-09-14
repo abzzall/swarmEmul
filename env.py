@@ -174,7 +174,7 @@ class Env:
 						)
 						if dist == -1:
 							continue
-						dist = max(dist, 0)
+						# dist = max(dist-self.robot_radius, 0)
 						min_dist = min(dist, min_dist)
 				if min_dist <= self.sensor_range:
 					agent.obs[j] = min_dist
@@ -469,7 +469,7 @@ def v_keep_formation(agent: Agent, leader_x, leader_y, w) -> Action:
 	x_dir = leader_x + agent.dx - agent.x
 	y_dir = leader_y + agent.dy - agent.y
 	distance = sqrt(x_dir ** 2 + y_dir ** 2)
-	if distance >= w:
+	if distance > w:
 		return Action(w * x_dir / distance, w * y_dir / distance)
 	else:
 		return Action(x_dir, y_dir)
@@ -481,7 +481,7 @@ def v_goal(leader_x, leader_y, goal_x, goal_y, w) -> Action:
 	x_dir = goal_x - leader_x
 	y_dir = goal_y - leader_y
 	distance = sqrt(x_dir ** 2 + y_dir ** 2)
-	if distance >= w:
+	if distance > w:
 		return Action(w * x_dir / distance, w * y_dir / distance)
 	else:
 		return Action(x_dir, y_dir)

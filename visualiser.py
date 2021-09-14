@@ -250,6 +250,6 @@ def current_episode_replay(env:Env, window_width=WINDOW_SIZE, window_height=WIND
 if __name__ == '__main__':
 	# episode_gui_(5, 1, 1)
 	env = Env()
-	episode_gui(env, 2.0, 1, 1)
+	episode_gui(env, 10, 5, 1)
 	# env.save_episode('test')
 	# episode_replay_from_file('test.npz', WINDOW_SIZE, WINDOW_SIZE)
