@@ -141,7 +141,7 @@ def clear_draw_env(env: Env, display: Surface, min_agent_size=0):
 	pygame.display.flip()
 
 
-def episode_gui(env: Env, w1, w2, w3, window_width=WINDOW_SIZE, window_height=WINDOW_SIZE, min_agent_size=0, fps=FPS):
+def episode_gui(env: Env, w1, w2,  window_width=WINDOW_SIZE, window_height=WINDOW_SIZE, min_agent_size=0, fps=FPS):
 	pygame.init()
 	screen = pygame.display.set_mode((window_width, window_height), HWSURFACE | DOUBLEBUF | RESIZABLE)
 
@@ -166,7 +166,7 @@ def episode_gui(env: Env, w1, w2, w3, window_width=WINDOW_SIZE, window_height=WI
 				elif event.key == K_DOWN:
 					fps = 1.1 * fps
 		if not paused:
-			env.play_step(w1, w2, w3)
+			env.play_step(w1, w2)
 			clear_draw_env(env, screen, min_agent_size)
 
 		clock.tick(fps)
@@ -175,22 +175,20 @@ def episode_gui(env: Env, w1, w2, w3, window_width=WINDOW_SIZE, window_height=WI
 
 def episode_gui_(
 		w1, w2, w3, env_width=ENV_SIZE, env_height=ENV_SIZE, goal_x=GOAL_X, goal_y=GOAL_Y, N=ROBOT_NUMBER,
-		obstacle_pos=OBSTACLE_POS,
-		desired_X=DX, desired_Y=DY, sensor_range=SENSOR_RANGE, leader_x=XL, leader_y=YL, robot_radius=ROBOT_RADIUS,
-		sensor_detection_count=SENSOR_DETECTION_COUNT, buffer_size=MAX_T, window_width=WINDOW_SIZE,
+		desired_X=DX, desired_Y=DY, leader_x=XL, leader_y=YL, robot_radius=ROBOT_RADIUS,
+		buffer_size=MAX_T, window_width=WINDOW_SIZE,
 		window_height=WINDOW_SIZE, min_agent_size=0, fps=FPS
 ):
 	env = Env(
 		env_width, env_height, goal_x, goal_y, N,
-		obstacle_pos,
-		desired_X, desired_Y, sensor_range, leader_x, leader_y, robot_radius,
-		sensor_detection_count, buffer_size
+		desired_X, desired_Y, leader_x, leader_y, robot_radius,
+		 buffer_size
 	)
 	episode_gui(env, window_width, window_height, w1, w2, w3, min_agent_size, fps)
 
 
 def episode_replay(
-		t, v_history, pose_history, angle_history, detection_history, dead_history, env_width, env_height,
+		t, v_history, pose_history, angle_history,  dead_history, env_width, env_height,
 		window_width,
 		window_height, goal_x, goal_y, wall_poses, radius=ROBOT_RADIUS, dX=DX,
 		dY=DY, N=ROBOT_NUMBER, min_agent_size=0, fps=FPS
@@ -234,22 +232,22 @@ def episode_replay(
 
 
 def episode_replay_from_file(file_name, window_width, window_height, fps=FPS, min_robot_size=0):
-	V, poses, angles, detections, dead, env_width, env_height, goal_x, goal_y, wall, radius, dx, dy, N, \
+	V, poses, angles,  dead, env_width, env_height, goal_x, goal_y, wall, radius, dx, dy, N, \
 	t, _, _  = Env.load_episode_history(
 		file_name
 		)
 	episode_replay(
-		t, V, poses, angles, detections, dead, env_width, env_height, window_width, window_height, goal_x, goal_y,
+		t, V, poses, angles,  dead, env_width, env_height, window_width, window_height, goal_x, goal_y,
 		wall,
 		radius, dx, dy, N, min_agent_size = min_robot_size, fps=fps
 		)
 
 def current_episode_replay(env:Env, window_width=WINDOW_SIZE, window_height=WINDOW_SIZE, fps=FPS):
-	episode_replay(env.t, env.v_history, env.pose_history, env.angle_history, env.detection_history, env.dead_history, env.width, env.height,window_width,window_height, env.xG, env.yG, env.wall_coords(), env.robot_radius, env.Dx, env.Dy,env.N,fps=fps)
+	episode_replay(env.t, env.v_history, env.pose_history, env.angle_history,  env.dead_history, env.width, env.height,window_width,window_height, env.xG, env.yG, env.wall_coords(), env.robot_radius, env.Dx, env.Dy,env.N,fps=fps)
 
 if __name__ == '__main__':
 	# episode_gui_(5, 1, 1)
 	env = Env()
-	episode_gui(env, 10, 5, 1)
+	episode_gui(env,  5, 1)
 	# env.save_episode('test')
 	# episode_replay_from_file('test.npz', WINDOW_SIZE, WINDOW_SIZE)

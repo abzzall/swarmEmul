@@ -32,33 +32,23 @@ class Action:
 
 
 class Env:
-	def __init__(
-			self, width=ENV_SIZE, height=ENV_SIZE, goal_x=GOAL_X, goal_y=GOAL_Y, N=ROBOT_NUMBER,
-			obstacle_pos=OBSTACLE_POS,
-			desired_X=DX, desired_Y=DY, sensor_range=SENSOR_RANGE, leader_x=XL, leader_y=YL, robot_radius=ROBOT_RADIUS,
-			sensor_detection_count=SENSOR_DETECTION_COUNT, buffer_size=MAX_T
-	):
-		# pygame.init()
+	def __init__(			self, width=ENV_SIZE, height=ENV_SIZE, goal_x=GOAL_X, goal_y=GOAL_Y, N=ROBOT_NUMBER,			desired_X=DX, desired_Y=DY,  leader_x=XL, leader_y=YL, robot_radius=ROBOT_RADIUS,			 buffer_size=MAX_T	):
 		self.width = width
 		self.height = height
 
 		self.xG = goal_x
 		self.yG = goal_y
-		self.obstacle_pos = obstacle_pos
 		self.N = N
 		self.Dx = desired_X
 		self.Dy = desired_Y
-		self.sensor_range = sensor_range
 		self.xL0 = leader_x
 		self.yL0 = leader_y
 		self.robot_radius = robot_radius
-		self.sensor_detection_count = sensor_detection_count
 		self.buffer_size = buffer_size
 
-		self.v_history = numpy.zeros((self.buffer_size, self.N, 4, 2))
+		self.v_history = numpy.zeros((self.buffer_size, self.N, 3, 2))
 		self.pose_history = numpy.zeros((self.buffer_size, self.N + 1, 2))
 		self.angle_history = numpy.zeros((self.buffer_size, self.N))
-		self.detection_history = numpy.zeros((self.buffer_size, self.N, self.sensor_detection_count))
 		self.dead_history = numpy.full((self.buffer_size, self.N), True)
 		self.reset()
 
@@ -67,7 +57,7 @@ class Env:
 		return [(0, 0, 1, height), (0, height - 1, width, height), (width - 1, 0, width, height), (0, 0, width - 1, 1)]
 
 	def wall_coords(self):
-		return Env.external_wall_coords(self.width, self.height) + [self.obstacle_pos]
+		return Env.external_wall_coords(self.width, self.height)
 
 	def reset(self):
 		self.is_done = False
@@ -82,8 +72,7 @@ class Env:
 		for i in range(self.N):
 			agent = Agent(
 				i,
-				self.xL + self.Dx[i], self.yL + self.Dy[i], self.Dx[i], self.Dy[i], radius=self.robot_radius,
-				sensor_detection_count=self.sensor_detection_count
+				self.xL + self.Dx[i], self.yL + self.Dy[i], self.Dx[i], self.Dy[i], radius=self.robot_radius
 			)
 			self.agents.append(agent)
 		self.t = 0
@@ -91,24 +80,21 @@ class Env:
 		self.v_history[:] = 0
 		self.pose_history[:] = 0
 		self.angle_history[:] = 0
-		self.detection_history[:] = 0
 		self.dead_history[:] = True
 
-	def episode_step_by_step(self, w1, w2, w3):
+	def episode_step_by_step(self, w1, w2):
 		self.reset()
 		yield self.is_done
 		while not self.is_done:
-			self.play_step(w1, w2, w3)
+			self.play_step(w1, w2)
 			yield self.is_done
 
-	def episode(self, w1, w2, w3):
+	def episode(self, w1, w2):
 		self.reset()
 		while not self.is_done:
-			self.play_step(w1, w2, w3)
+			self.play_step(w1, w2)
 
-	def play_step(self, w1, w2, w3):
-		# for t in range(FPS):
-		self.observe()
+	def play_step(self, w1, w2):
 		moving = False
 		self.check_dead()
 		self.reset_leader()
@@ -119,12 +105,11 @@ class Env:
 			self.dead_history[self.t, agent.id] = False
 			if agent.is_dead:
 				continue
-			v1 = v_avoid_obs_min_angle(agent, self.sensor_range)
-			v2 = v_keep_formation(agent, self.xL, self.yL, w2)
-			v3 = v_goal(self.xL, self.yL, self.xG, self.yG, w3)
-			v = w1 * v1 + v2 + v3
+			v1 = v_keep_formation(agent, self.xL, self.yL, w1)
+			v2 = v_goal(self.xL, self.yL, self.xG, self.yG, w2)
+			v = v1 + v2
 			agent.move(v)
-			self.v_history[self.t, agent.id, :, :] = [[v1.x, v1.y], [v2.x, v2.y], [v3.x, v3.y], [v.x, v.y]]
+			self.v_history[self.t, agent.id, :, :] = [[v1.x, v1.y], [v2.x, v2.y], [v.x, v.y]]
 			if v.active():
 				moving = True
 
@@ -159,34 +144,10 @@ class Env:
 						agent.is_dead = True
 						break
 
-	def observe(self):
-		for i in range(self.N):
-			agent = self.agents[i]
-			agent.detected = False
-			for j, angle in enumerate(agent.get_lidar_angles()):
-				min_dist = self.sensor_range + 1
-				for drawable in self.agents + self.walls:
-					if drawable != agent:
-						# nn=agent.get_absolute_angle(angle)
-						dist = drawable.get_intersection(
-							x=agent.x, y=agent.y,
-							angle=angle
-						)
-						if dist == -1:
-							continue
-						# dist = max(dist-self.robot_radius, 0)
-						min_dist = min(dist, min_dist)
-				if min_dist <= self.sensor_range:
-					agent.obs[j] = min_dist
-					agent.detected = True
-				else:
-					agent.obs[j] = 0
-			self.detection_history[self.t, agent.id, :] = agent.obs
-
 	def save_episode(self, file_name):
 		numpy.savez(
 			file_name, v=self.v_history[:self.t, :, :, :], pose=self.pose_history[:self.t, :, :],
-			angle=self.angle_history[:self.t, :], detection=self.detection_history[:self.t, :, :],
+			angle=self.angle_history[:self.t, :],
 			dead=self.dead_history[:self.t, :], width=self.width, height=self.height, goal_x=self.xG, goal_y=self.yG,
 			wall=self.wall_coords(), radius=self.robot_radius, dx=self.Dx, dy=self.Dy, N=self.N, t=self.t,
 			leader_x=self.xL, leader_y=self.yL
@@ -195,7 +156,7 @@ class Env:
 	@staticmethod
 	def load_episode_history(file_name):
 		history = numpy.load(file_name)
-		return history['v'], history['pose'], history['angle'], history['detection'], history['dead'], \
+		return history['v'], history['pose'], history['angle'], history['dead'], \
 		       history['width'], \
 		       history['height'], history['goal_x'], history['goal_y'], history['wall'], history['radius'], history[
 			       'dx'], history['dy'], history['N'], history['t'], history['leader_x'], history['leader_y']
@@ -356,12 +317,9 @@ class Drawable:
 class Agent(Drawable):
 	id = 0
 
-	def __init__(self, id, x, y, dx, dy, angle=0, radius=ROBOT_RADIUS, sensor_detection_count=SENSOR_DETECTION_COUNT):
+	def __init__(self, id, x, y, dx, dy, angle=0, radius=ROBOT_RADIUS):
 		self.angle = angle
 		self.is_dead = False
-		self.sensor_detection_count = sensor_detection_count
-		self.obs = numpy.zeros(self.sensor_detection_count)
-		self.detected = False
 		self.dx = dx
 		self.dy = dy
 		self.id = id
@@ -404,10 +362,6 @@ class Agent(Drawable):
 	def get_absolute_angle(self, angle):
 		return normAngleMinusPiPi(angle + self.angle)
 
-	def get_lidar_angles(self):
-		return lidar_angles(self.sensor_detection_count, self.angle)
-
-
 class Wall(Drawable):
 	def __init__(self, from_x, from_y, to_x, to_y):
 		w = to_x - from_x
@@ -416,14 +370,6 @@ class Wall(Drawable):
 			self, x=(to_x + from_x) / 2, y=(to_y + from_y) / 2, length_x=w,
 			length_y=h
 		)
-
-
-def lidar_angles(sensor_detection_count=SENSOR_DETECTION_COUNT, offset=0):
-	return [
-		normAngleMinusPiPi(offset - pi + i * 2 * pi / sensor_detection_count)
-		for i in
-		range(sensor_detection_count)]
-
 
 def virtual_leader_position(agents: List[Agent]):
 	x = []
@@ -444,23 +390,6 @@ def virtual_leader_position(agents: List[Agent]):
 	dy = numpy.array(dy)
 	return numpy.mean(x - dx), numpy.mean(y - dy)
 
-
-def v_avoid_obs_min_angle(agent: Agent, sensor_range) -> Action:
-	if not agent.detected:
-		return Action(0, 0)
-
-	angles = numpy.array(agent.get_lidar_angles())
-	agent.obs[agent.obs == 0] = sensor_range
-	nom = 0
-	denom = 0
-	for i in range(len(angles)):
-		nom += angles[i] * agent.obs[i]
-		denom += agent.obs[i]
-
-	turn_angle = nom / denom
-	min_distance = min(agent.obs)
-	k = (sensor_range - min_distance) / sensor_range
-	return Action(k * cos(turn_angle), k * sin(turn_angle))
 
 
 def v_keep_formation(agent: Agent, leader_x, leader_y, w) -> Action:
