@@ -38,11 +38,11 @@ def show_episode(directory, run_number, window_width=WINDOW_SIZE, window_height=
 	episode_replay_from_file(os.path.join(directory, str(run_number) + '.npz'), window_width, window_height, fps)
 
 
-def fill_report_with_graph(directory, input, writer, outs=[2, 3, 4, 5], ax_rows=2, ax_cols=2, row_number=101):
+def fill_report_with_graph(directory, input, writer, outs=[2, 3, 4, 5, 6, 7], ax_rows=3, ax_cols=2, row_number=101):
 	df = pandas.read_excel(os.path.join(directory, 'report.xls'))
 	df.set_index('id', inplace=True)
 	print(df.columns)
-	fig, ax = plt.subplots(nrows=ax_rows, ncols=ax_cols, figsize=(15, 6))
+	fig, ax = plt.subplots(nrows=ax_rows, ncols=ax_cols, figsize=(15, 10))
 	k = 0
 	for i in range(ax_rows):
 		for j in range(ax_cols):

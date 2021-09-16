@@ -59,45 +59,73 @@ class Env:
 	def wall_coords(self):
 		return Env.external_wall_coords(self.width, self.height)
 
-	def reset(self):
+	def reset(self, reset_to_line=False):
+		self.tForm=0
+		self.tGoal=0
+		self.form_achieved=False
+		self.goal_achieved=False
 		self.is_done = False
-		self.agents = []
 		self.walls = []
 		for wall_coord in self.wall_coords():
 			from_x, from_y, to_x, to_y = wall_coord
 			wall = Wall(from_x, from_y, to_x, to_y)
 			self.walls.append(wall)
-		self.xL=self.xL0
-		self.yL=self.yL0
-		for i in range(self.N):
-			agent = Agent(
-				i,
-				self.xL + self.Dx[i], self.yL + self.Dy[i], self.Dx[i], self.Dy[i], radius=self.robot_radius
-			)
-			self.agents.append(agent)
+		if reset_to_line:
+			self.reset_to_line_formation()
+		else:
+			self.reset_formation()
 		self.t = 0
 		self.is_done = False
 		self.v_history[:] = 0
 		self.pose_history[:] = 0
 		self.angle_history[:] = 0
 		self.dead_history[:] = True
+		self.reset_leader()
 
-	def episode_step_by_step(self, w1, w2):
-		self.reset()
+	def reset_to_line_formation(self):
+		self.agents = []
+		x0=self.xL0-5*(self.N-1)*0.5
+		y0=self.yL0
+		for i in range(self.N):
+			agent = Agent(
+				i,
+				x0+5*i, y0, self.Dx[i], self.Dy[i], radius=self.robot_radius
+			)
+			self.agents.append(agent)
+
+	def reset_formation(self):
+		self.agents = []
+		self.xL = self.xL0
+		self.yL = self.yL0
+		for i in range(self.N):
+			agent = Agent(
+				i,
+				self.xL + self.Dx[i], self.yL + self.Dy[i], self.Dx[i], self.Dy[i], radius=self.robot_radius
+			)
+			self.agents.append(agent)
+	def episode_step_by_step(self, w1, w2, reset_to_line=False):
+		self.reset(reset_to_line=reset_to_line)
 		yield self.is_done
 		while not self.is_done:
 			self.play_step(w1, w2)
 			yield self.is_done
+	def check_form_achieved(self)->bool:
+		for agent in self.agents:
+			if agent.x!=self.xL+agent.dx or agent.y!=self.yL+agent.dy:
+				return False
+		return True
 
-	def episode(self, w1, w2):
-		self.reset()
+	def check_goal_achieved(self):
+		return self.xL==self.xG and self.yL==self.yG
+
+	def episode(self, w1, w2, reset_to_line=False):
+		self.reset(reset_to_line=reset_to_line)
 		while not self.is_done:
 			self.play_step(w1, w2)
 
 	def play_step(self, w1, w2):
 		moving = False
 		self.check_dead()
-		self.reset_leader()
 		for i in range(self.N):
 			agent = self.agents[i]
 			self.pose_history[self.t, agent.id, :] = [agent.x, agent.y]
@@ -112,6 +140,13 @@ class Env:
 			self.v_history[self.t, agent.id, :, :] = [[v1.x, v1.y], [v2.x, v2.y], [v.x, v.y]]
 			if v.active():
 				moving = True
+		self.reset_leader()
+		if not self.form_achieved and self.check_form_achieved():
+			self.form_achieved=True
+			self.tForm=self.t
+		if not self.goal_achieved and self.check_goal_achieved():
+			self.goal_achieved=True
+			self.tGoal=self.t
 
 
 		self.t += 1
