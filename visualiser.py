@@ -145,7 +145,7 @@ def episode_gui(env: Env, w1, w2,  window_width=WINDOW_SIZE, window_height=WINDO
 	pygame.init()
 	screen = pygame.display.set_mode((window_width, window_height), HWSURFACE | DOUBLEBUF | RESIZABLE)
 
-	env.reset()
+	env.reset_to_line_formation()
 	paused = False
 	clock = pygame.time.Clock()
 	clear_draw_env(env, screen, min_agent_size)
