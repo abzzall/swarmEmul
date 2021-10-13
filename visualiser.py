@@ -2,6 +2,8 @@ from math import ceil
 from math import cos
 from math import floor
 from math import sin
+from random import randint
+from random import seed
 
 import pygame
 from pygame import Surface
@@ -13,6 +15,32 @@ from env import Env
 from env import Wall
 
 from constants import *
+
+
+def perebor(a, b, k):
+	# print('a, b, k:'+str(a)+', '+str(b)+', '+str(k))
+	if k == 0:
+		return [[]]
+	if a + k > b + 1 or k < 1:
+		return []
+	elif a + k == b + 1:
+		# print(range(a, b+1))
+		return [[*range(a, b + 1)]]
+	elif k == 1:
+		# print([[i] for i in range(a, b+1)])
+		return [[i] for i in range(a, b + 1)]
+	else:
+		result = []
+		for i in range(a, b - k + 1):
+			try:
+				p = perebor(i + 1, b, k - 1)
+				result = result + [[i] + l for l in p]
+			except Exception:
+				# p=perebor(i+1, b, k-1)
+
+				# print('a, b, k, i:' + str(a) + ', ' + str(b) + ', ' + str(k)+ ', ' + str(i))
+				raise Exception('a, b, k, i, p:' + str(a) + ', ' + str(b) + ', ' + str(k) + ', ' + str(i))
+		return result + [[*range(b - k + 1, b + 1)]]
 
 
 def scale(v, scale_koef=1.0) -> int:
@@ -81,9 +109,9 @@ def env_surface(env: Env, scale_koef=1.0, min_agent_size=0) -> Surface:
 	for wall in env.walls:
 		draw_wall(wall, display, scale_koef)
 
-	blit_surface(pygame.image.load('img/goal.png'), display, env.xG, env.yG, scale_koef)
 	if not (env.xL is None or env.yL is None):
 		blit_surface(pygame.image.load('img/leader.png'), display, env.xL, env.yL, scale_koef)
+	blit_surface(pygame.image.load('img/goal.png'), display, env.xG, env.yG, scale_koef)
 	return display
 
 
@@ -102,10 +130,9 @@ def env_surface_(
 			min_size=min_agent_size
 		)
 
-	blit_surface(pygame.image.load('img/goal.png'), display, goal_x, goal_y, scale_koef)
-
 	if not (poses[N, 0] == 0 and poses[N, 1] == 0):
 		blit_surface(pygame.image.load('img/leader.png'), display, poses[N, 0], poses[N, 1], scale_koef)
+	blit_surface(pygame.image.load('img/goal.png'), display, goal_x, goal_y, scale_koef)
 	return display
 
 
@@ -141,19 +168,40 @@ def clear_draw_env(env: Env, display: Surface, min_agent_size=0):
 	pygame.display.flip()
 
 
-def episode_gui(env: Env, w1, w2,  window_width=WINDOW_SIZE, window_height=WINDOW_SIZE, min_agent_size=0, fps=FPS):
+def random_xs(N=ROBOT_NUMBER, minDist=ROBOT_RADIUS*2+1, maxDist=WINDOW_SIZE//ROBOT_NUMBER-2*ROBOT_RADIUS):
+	seed(0)
+
+	s = 0
+	xs = []
+	for i in range(N):
+		s += randint(minDist, maxDist)
+		xs.append(s)
+	return xs
+
+
+def episode_gui(
+		env: Env, w1, w2, window_width=WINDOW_SIZE, window_height=WINDOW_SIZE, min_agent_size=0, fps=FPS, paused=False,
+		killed=None
+		):
 	pygame.init()
 	screen = pygame.display.set_mode((window_width, window_height), HWSURFACE | DOUBLEBUF | RESIZABLE)
-
-	env.reset_to_line_formation()
-	paused = False
+	env.reset_to_custom_line_formation(random_xs(env.N, env.robot_radius*2+1, env.width//env.N-2*env.robot_radius), 100)
+	# env.reset_to_unsimmetric_line_formation()
+	if (killed is not None):
+		for i in killed:
+			env.agents[i].is_dead = True
+		env.reset_leader()
+	quit = False
 	clock = pygame.time.Clock()
 	clear_draw_env(env, screen, min_agent_size)
 
-	while (not env.is_done or paused):
+	while (not quit):
 		for event in pygame.event.get():
 			if event.type == QUIT:
+				quit = True
 				pygame.display.quit()
+				pygame.quit()
+				break
 			elif event.type == VIDEORESIZE:
 				screen = pygame.display.set_mode(event.size, HWSURFACE | DOUBLEBUF | RESIZABLE)
 				clear_draw_env(env, screen, min_agent_size)
@@ -165,12 +213,53 @@ def episode_gui(env: Env, w1, w2,  window_width=WINDOW_SIZE, window_height=WINDO
 					fps = 0.9 * fps
 				elif event.key == K_DOWN:
 					fps = 1.1 * fps
-		if not paused:
+		if not paused and not env.is_done:
 			env.play_step(w1, w2)
 			clear_draw_env(env, screen, min_agent_size)
 
 		clock.tick(fps)
-	pygame.quit()
+
+
+# pygame.quit()
+def episode_gui_only_formation(
+		env: Env, w, window_width=WINDOW_SIZE, window_height=WINDOW_SIZE, min_agent_size=0, fps=FPS, paused=False,
+		killed=None
+		):
+	pygame.init()
+	screen = pygame.display.set_mode((window_width, window_height), HWSURFACE | DOUBLEBUF | RESIZABLE)
+
+	env.reset_to_unsimmetric_line_formation()
+	if (killed is not None):
+		for i in killed:
+			env.agents[i].is_dead = True
+		env.reset_leader()
+	quit = False
+	clock = pygame.time.Clock()
+	clear_draw_env(env, screen, min_agent_size)
+
+	while (not quit):
+		for event in pygame.event.get():
+			if event.type == QUIT:
+				quit = True
+				pygame.display.quit()
+				pygame.quit()
+				break
+			elif event.type == VIDEORESIZE:
+				screen = pygame.display.set_mode(event.size, HWSURFACE | DOUBLEBUF | RESIZABLE)
+				clear_draw_env(env, screen, min_agent_size)
+
+			elif event.type == KEYDOWN:
+				if event.key == K_SPACE:
+					paused = not paused
+				elif event.key == K_UP:
+					fps = 0.9 * fps
+				elif event.key == K_DOWN:
+					fps = 1.1 * fps
+		if not paused and not env.is_done:
+			env.play_step_only_formation(w)
+			clear_draw_env(env, screen, min_agent_size)
+
+		clock.tick(fps)
 
 
 def episode_gui_(
@@ -182,13 +271,13 @@ def episode_gui_(
 	env = Env(
 		env_width, env_height, goal_x, goal_y, N,
 		desired_X, desired_Y, leader_x, leader_y, robot_radius,
-		 buffer_size
+		buffer_size
 	)
 	episode_gui(env, window_width, window_height, w1, w2, w3, min_agent_size, fps)
 
 
 def episode_replay(
-		t, v_history, pose_history, angle_history,  dead_history, env_width, env_height,
+		t, v_history, pose_history, angle_history, dead_history, env_width, env_height,
 		window_width,
 		window_height, goal_x, goal_y, wall_poses, radius=ROBOT_RADIUS, dX=DX,
 		dY=DY, N=ROBOT_NUMBER, min_agent_size=0, fps=FPS
@@ -232,22 +321,93 @@ def episode_replay(
 
 
 def episode_replay_from_file(file_name, window_width, window_height, fps=FPS, min_robot_size=0):
-	V, poses, angles,  dead, env_width, env_height, goal_x, goal_y, wall, radius, dx, dy, N, \
-	t, _, _  = Env.load_episode_history(
+	V, poses, angles, dead, env_width, env_height, goal_x, goal_y, wall, radius, dx, dy, N, \
+	t, _, _ = Env.load_episode_history(
 		file_name
-		)
+	)
 	episode_replay(
-		t, V, poses, angles,  dead, env_width, env_height, window_width, window_height, goal_x, goal_y,
+		t, V, poses, angles, dead, env_width, env_height, window_width, window_height, goal_x, goal_y,
 		wall,
-		radius, dx, dy, N, min_agent_size = min_robot_size, fps=fps
+		radius, dx, dy, N, min_agent_size=min_robot_size, fps=fps
+	)
+
+
+def current_episode_replay(env: Env, window_width=WINDOW_SIZE, window_height=WINDOW_SIZE, fps=FPS):
+	episode_replay(
+		env.t, env.v_history, env.pose_history, env.angle_history, env.dead_history, env.width, env.height,
+		window_width, window_height, env.xG, env.yG, env.wall_coords(), env.robot_radius, env.Dx, env.Dy, env.N,
+		fps=fps
 		)
 
-def current_episode_replay(env:Env, window_width=WINDOW_SIZE, window_height=WINDOW_SIZE, fps=FPS):
-	episode_replay(env.t, env.v_history, env.pose_history, env.angle_history,  env.dead_history, env.width, env.height,window_width,window_height, env.xG, env.yG, env.wall_coords(), env.robot_radius, env.Dx, env.Dy,env.N,fps=fps)
+
+def kill_list():
+	p = [perebor(0, 8, i) for i in range(9)]
+	s = 1
+	i = 0
+	killed_list = []
+	while s > 0:
+		s = 0
+		for l in p:
+			if len(l) > i:
+				killed_list = killed_list + [l[i]]
+				s += 1
+		i += 1
+	return killed_list
+
 
 if __name__ == '__main__':
-	# episode_gui_(5, 1, 1)
-	env = Env()
-	episode_gui(env,  5, 1)
-	# env.save_episode('test')
-	# episode_replay_from_file('test.npz', WINDOW_SIZE, WINDOW_SIZE)
+	p = kill_list()
+	print(p[2])
+	seed(1)
+	xs = []
+	s = 0
+	for i in range(9):
+		s += randint(3, 10)
+		xs.append(s)
+	env = Env(
+		width=100, height=100, goal_x=50, goal_y=80, N=ROBOT_NUMBER,
+		desired_X=DX, desired_Y=DY, leader_x=50, leader_y=20, robot_radius=ROBOT_RADIUS,
+		buffer_size=MAX_T
+	)
+	print(xs)
+	pygame.init()
+	screen = pygame.display.set_mode((1000, 1000), HWSURFACE | DOUBLEBUF | RESIZABLE)
+	env.reset()
+	# env.reset_to_line_formation()
+	env.reset_to_custom_line_formation(xs, 20)
+	# env.reset_to_unsimmetric_line_formation()
+	for i in p[0]:
+		env.agents[i].is_dead = True
+	env.reset_leader()
+	print(env.xL, env.yL, sep=', ')
+	quit = False
+	clock = pygame.time.Clock()
+	clear_draw_env(env, screen)
+
+	paused = True
+	fps = FPS
+	while (not quit):
+		for event in pygame.event.get():
+			if event.type == QUIT:
+				quit = True
+				pygame.display.quit()
+				pygame.quit()
+				break
+			elif event.type == VIDEORESIZE:
+				screen = pygame.display.set_mode(event.size, HWSURFACE | DOUBLEBUF | RESIZABLE)
+				clear_draw_env(env, screen)
+
+			elif event.type == KEYDOWN:
+				if event.key == K_SPACE:
+					paused = not paused
+				elif event.key == K_UP:
+					fps = 0.9 * fps
+				elif event.key == K_DOWN:
+					fps = 1.1 * fps
+		if not paused and not env.is_done:
+			env.play_step(0.1, 5)
+			clear_draw_env(env, screen, 0)
+		if env.is_done:
+			print(env.xL, env.yL, env.xG, env.yG, env.tGoal, sep=' ')
+
+		clock.tick(fps)

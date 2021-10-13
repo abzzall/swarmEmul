@@ -1,4 +1,4 @@
-ROBOT_RADIUS = 0.5
+ROBOT_RADIUS = 1
 
 XL = 100
 YL = 30
@@ -31,3 +31,5 @@ FPS=5
 WINDOW_SIZE=1000
 ENV_SIZE=200
 full_report='_report.xls'
+
+EPSILON=0.00001

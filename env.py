@@ -16,7 +16,7 @@ class Action:
 		return sqrt(self.x ** 2 + self.y ** 2)
 
 	def active(self):
-		return self.v() > 0.001
+		return self.v() >= EPSILON
 
 	def __add__(self, other):
 		return Action(self.x + other.x, self.y + other.y)
@@ -84,14 +84,45 @@ class Env:
 
 	def reset_to_line_formation(self):
 		self.agents = []
-		x0=self.xL0-5*(self.N-1)*0.5
+		x0=self.xL0-8*(self.N-1)*0.5
 		y0=self.yL0
 		for i in range(self.N):
 			agent = Agent(
 				i,
-				x0+5*i, y0, self.Dx[i], self.Dy[i], radius=self.robot_radius
+				x0+8*i, y0, self.Dx[i], self.Dy[i], radius=self.robot_radius
 			)
 			self.agents.append(agent)
+
+
+	def reset_to_unsimmetric_line_formation(self):
+		self.agents = []
+		x0=self.xL0
+		y0=self.yL0
+		p=-1
+		for i in range(self.N):
+			agent = Agent(
+				i,
+				i*(i+1)+5, y0, self.Dx[i], self.Dy[i], radius=self.robot_radius
+			)
+			self.agents.append(agent)
+		self.reset_leader()
+
+	def alive_agent_count(self):
+		s = 0
+		for agent in self.agents:
+			if not agent.is_dead:
+				s += 1
+		return s
+
+	def reset_to_custom_line_formation(self, xs: List[int], y:int):
+		self.agents = []
+		for i in range(self.N):
+			agent = Agent(
+				i,
+				xs[i], y, self.Dx[i], self.Dy[i], radius=self.robot_radius
+			)
+			self.agents.append(agent)
+		self.reset_leader()
 
 	def reset_formation(self):
 		self.agents = []
@@ -111,19 +142,26 @@ class Env:
 			yield self.is_done
 	def check_form_achieved(self)->bool:
 		for agent in self.agents:
-			if agent.x!=self.xL+agent.dx or agent.y!=self.yL+agent.dy:
+			if agent.is_dead:
+				continue
+			if not equals(agent.x, self.xL+agent.dx) or not equals(agent.y, self.yL+agent.dy) :
 				return False
 		return True
 
 	def check_goal_achieved(self):
-		return self.xL==self.xG and self.yL==self.yG
+		return equals(self.xL, self.xG) and equals(self.yL, self.yG)
 
-	def episode(self, w1, w2, reset_to_line=False):
+	def episode(self, w1, w2, reset_to_line=False, killed_agents=None):
 		self.reset(reset_to_line=reset_to_line)
+		if killed_agents is not None:
+			for i in killed_agents:
+				self.agents[i].is_dead=True
+			self.reset_leader()
 		while not self.is_done:
 			self.play_step(w1, w2)
 
 	def play_step(self, w1, w2):
+		print('step: ', self.t)
 		moving = False
 		self.check_dead()
 		for i in range(self.N):
@@ -140,24 +178,62 @@ class Env:
 			self.v_history[self.t, agent.id, :, :] = [[v1.x, v1.y], [v2.x, v2.y], [v.x, v.y]]
 			if v.active():
 				moving = True
+			# else:
+			# 	v1 = v_keep_formation(agent, self.xL, self.yL, w1)
+			# 	v2 = v_goal(self.xL, self.yL, self.xG, self.yG, w2)
+			# 	print(str(v1)+str(v2))
 		self.reset_leader()
 		if not self.form_achieved and self.check_form_achieved():
 			self.form_achieved=True
 			self.tForm=self.t
+		elif not self.check_form_achieved():
+			self.form_achieved=False
 		if not self.goal_achieved and self.check_goal_achieved():
 			self.goal_achieved=True
 			self.tGoal=self.t
+		# elif self.goal_achieved and not self.check_goal_achieved():
+		# 	self.goal_achieved=False
+
 
 
 		self.t += 1
 		if not moving or self.t==self.buffer_size:
 			self.is_done = True
 
+	def play_step_only_formation(self, w):
+		moving = False
+		self.check_dead()
+		for i in range(self.N):
+			agent = self.agents[i]
+			self.pose_history[self.t, agent.id, :] = [agent.x, agent.y]
+			self.angle_history[self.t, agent.id] = agent.angle
+			self.dead_history[self.t, agent.id] = False
+			if agent.is_dead:
+				continue
+			v = v_keep_formation(agent, self.xL, self.yL, w)
+			agent.move(v)
+			self.v_history[self.t, agent.id, :, :] = [[v.x, v.y], [0, 0], [v.x, v.y]]
+			if v.active():
+				moving = True
+		self.reset_leader()
+		if not self.form_achieved and self.check_form_achieved():
+			self.form_achieved=True
+			self.tForm=self.t
+		# if not self.goal_achieved and self.check_goal_achieved():
+		# 	self.goal_achieved=True
+		# 	self.tGoal=self.t
+
+
+		self.t += 1
+		if not moving or self.t==self.buffer_size:
+			self.is_done = True
+
+
 	def reset_leader(self):
 		xl, yl = virtual_leader_position(self.agents)
 		if xl is None or yl is None:
 			self.is_done = True
-		else:
+		elif not equals(xl, self.xL) or not equals( yl, self.yL):
 			self.xL = xl
 			self.yL = yl
 			self.pose_history[self.t, self.N, :] = [self.xL, self.yL]
@@ -168,10 +244,12 @@ class Env:
 			if agent.is_dead:
 				continue
 
+			if agent.x<0 or agent.x>self.width or agent.y<0 or agent.y>self.height:
+				agent.is_dead=True
+				continue
 			for drawable in self.agents:
 				if drawable != agent and agent.is_collide(drawable):
 					agent.is_dead = True
-					drawable.is_dead = True
 					break
 			if not agent.is_dead:
 				for drawable in self.walls:
@@ -442,6 +520,19 @@ def v_keep_formation(agent: Agent, leader_x, leader_y, w) -> Action:
 def v_goal(leader_x, leader_y, goal_x, goal_y, w) -> Action:
 	if w==0:
 		return Action(0.0, 0.0)
+	x_dir = goal_x - leader_x
+	y_dir = goal_y - leader_y
+	distance = sqrt(x_dir ** 2 + y_dir ** 2)
+	if distance > w:
+		return Action(w * x_dir / distance, w * y_dir / distance)
+	else:
+		return Action(x_dir, y_dir)
+
+def v_goal1(agent: Agent, goal_x, goal_y, w) -> Action:
+	if w==0:
+		return Action(0.0, 0.0)
+	leader_x=agent.x-agent.dx
+	leader_y=agent.y-agent.dy
 	x_dir = goal_x - leader_x
 	y_dir = goal_y - leader_y
 	distance = sqrt(x_dir ** 2 + y_dir ** 2)

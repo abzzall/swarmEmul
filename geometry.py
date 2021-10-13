@@ -5,10 +5,14 @@ from math import sin
 from math import sqrt
 from math import tan
 
+from constants import EPSILON
+
 
 def getIntersectionWithX(k, b, x):
 	return k * x + b
 
+def equals(a, b, h=EPSILON):
+	return abs(a-b)<h
 
 def getDistance(x1, y1, x2, y2):
 	return sqrt((x1 - x2) ** 2 + (y1 - y2) ** 2)
