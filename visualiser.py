@@ -146,7 +146,7 @@ def episode_gui(env: Env, w1, w2, w3, window_width=WINDOW_SIZE, window_height=WI
 	screen = pygame.display.set_mode((window_width, window_height), HWSURFACE | DOUBLEBUF | RESIZABLE)
 
 	env.reset()
-	paused = False
+	paused = True
 	clock = pygame.time.Clock()
 	clear_draw_env(env, screen, min_agent_size)
 
@@ -250,6 +250,6 @@ def current_episode_replay(env:Env, window_width=WINDOW_SIZE, window_height=WIND
 if __name__ == '__main__':
 	# episode_gui_(5, 1, 1)
 	env = Env()
-	episode_gui(env, 10, 5, 1)
+	episode_gui(env, 3, 1, 1)
 	# env.save_episode('test')
 	# episode_replay_from_file('test.npz', WINDOW_SIZE, WINDOW_SIZE)
