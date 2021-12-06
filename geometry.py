@@ -5,6 +5,8 @@ from math import sin
 from math import sqrt
 from math import tan
 
+from constants import EPSILON
+
 
 def getIntersectionWithX(k, b, x):
 	return k * x + b
@@ -55,3 +57,6 @@ def normAngleMinusPiPi(angle):
 		while angle > pi:
 			angle = angle - 2 * pi
 		return angle
+
+def equals(a, b, eps=EPSILON):
+	return abs(a-b)<=eps

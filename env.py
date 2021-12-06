@@ -16,7 +16,7 @@ class Action:
 		return sqrt(self.x ** 2 + self.y ** 2)
 
 	def active(self):
-		return self.v() > 0.001
+		return self.v() >= EPSILON
 
 	def __add__(self, other):
 		return Action(self.x + other.x, self.y + other.y)
@@ -34,7 +34,6 @@ class Action:
 class Env:
 	def __init__(
 			self, width=ENV_SIZE, height=ENV_SIZE, goal_x=GOAL_X, goal_y=GOAL_Y, N=ROBOT_NUMBER,
-			obstacle_pos=OBSTACLE_POS,
 			desired_X=DX, desired_Y=DY, sensor_range=SENSOR_RANGE, leader_x=XL, leader_y=YL, robot_radius=ROBOT_RADIUS,
 			sensor_detection_count=SENSOR_DETECTION_COUNT, buffer_size=MAX_T
 	):
@@ -44,7 +43,6 @@ class Env:
 
 		self.xG = goal_x
 		self.yG = goal_y
-		self.obstacle_pos = obstacle_pos
 		self.N = N
 		self.Dx = desired_X
 		self.Dy = desired_Y
@@ -67,7 +65,7 @@ class Env:
 		return [(0, 0, 1, height), (0, height - 1, width, height), (width - 1, 0, width, height), (0, 0, width - 1, 1)]
 
 	def wall_coords(self):
-		return Env.external_wall_coords(self.width, self.height) + [self.obstacle_pos]
+		return Env.external_wall_coords(self.width, self.height)
 
 	def reset(self):
 		self.is_done = False
@@ -147,17 +145,15 @@ class Env:
 			agent = self.agents[i]
 			if agent.is_dead:
 				continue
-
 			for drawable in self.agents:
-				if drawable != agent and agent.is_collide(drawable):
+				if drawable != agent and not drawable.is_dead and agent.is_collide(drawable):
 					agent.is_dead = True
 					drawable.is_dead = True
 					break
-			if not agent.is_dead:
-				for drawable in self.walls:
-					if agent.is_collide(drawable):
-						agent.is_dead = True
-						break
+			for drawable in self.walls:
+				if agent.is_collide(drawable):
+					agent.is_dead = True
+					break
 
 	def observe(self):
 		for i in range(self.N):
@@ -167,6 +163,8 @@ class Env:
 				min_dist = self.sensor_range + 1
 				for drawable in self.agents + self.walls:
 					if drawable != agent:
+						if isinstance(drawable, Agent) and drawable.is_dead:
+							continue
 						# nn=agent.get_absolute_angle(angle)
 						dist = drawable.get_intersection(
 							x=agent.x, y=agent.y,
@@ -180,7 +178,7 @@ class Env:
 					agent.obs[j] = min_dist
 					agent.detected = True
 				else:
-					agent.obs[j] = 0
+					agent.obs[j] = self.sensor_range
 			self.detection_history[self.t, agent.id, :] = agent.obs
 
 	def save_episode(self, file_name):
@@ -200,7 +198,20 @@ class Env:
 		       history['height'], history['goal_x'], history['goal_y'], history['wall'], history['radius'], history[
 			       'dx'], history['dy'], history['N'], history['t'], history['leader_x'], history['leader_y']
 
+	def checkFormAchieved(self):
+		for agent in self.agents:
+			if not agent.is_dead and not (equals(agent.x-agent.dx, self.xL) and equals(agent.y-agent.dy, self.yL)):
+				return False
+		return True
 
+	def checkGoalAchieved(self):
+		for agent in self.agents:
+			if not agent.is_dead and not (equals(agent.x-agent.dx, self.xG) and equals(agent.y-agent.dy, self.yG)):
+				return False
+		return True
+
+	def addObstacle(self, from_x, from_y, to_x, to_y):
+		self.walls.append(Wall(from_x, from_y, to_x, to_y))
 class Drawable:
 	def __init__(self, x, y, length_x, length_y):
 		self.x = x

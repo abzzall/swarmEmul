@@ -38,3 +38,4 @@ FPS=5
 WINDOW_SIZE=1000
 ENV_SIZE=200
 full_report='report2.xls'
+EPSILON=0.00001
