@@ -17,7 +17,9 @@ def main():
     sensor_range=5
     Dx, Dy=desiredXYSquarePattern(N, sensor_range+ROBOT_RADIUS)
     env=Env(500, 500, 250, 450, N*N, Dx, Dy,  sensor_range, 250, 50, ROBOT_RADIUS, SENSOR_DETECTION_COUNT, MAX_T)
-
+    env.addObstacle(225, 100, 275, 150)
+    env.addObstacle(350, 200, 400, 250)
+    env.addObstacle(100, 200, 150, 250)
     episode_gui(env, 5, 0.3, 0.3)
     print(alive_agent_count(env))
 

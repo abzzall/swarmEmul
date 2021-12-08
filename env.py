@@ -58,6 +58,12 @@ class Env:
 		self.angle_history = numpy.zeros((self.buffer_size, self.N))
 		self.detection_history = numpy.zeros((self.buffer_size, self.N, self.sensor_detection_count))
 		self.dead_history = numpy.full((self.buffer_size, self.N), True)
+
+		self.walls = []
+		for wall_coord in self.wall_coords():
+			from_x, from_y, to_x, to_y = wall_coord
+			wall = Wall(from_x, from_y, to_x, to_y)
+			self.walls.append(wall)
 		self.reset()
 
 	@staticmethod
@@ -70,11 +76,7 @@ class Env:
 	def reset(self):
 		self.is_done = False
 		self.agents = []
-		self.walls = []
-		for wall_coord in self.wall_coords():
-			from_x, from_y, to_x, to_y = wall_coord
-			wall = Wall(from_x, from_y, to_x, to_y)
-			self.walls.append(wall)
+
 		self.xL=self.xL0
 		self.yL=self.yL0
 		for i in range(self.N):
