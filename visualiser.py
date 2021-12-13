@@ -16,6 +16,7 @@ from env import Wall
 
 from constants import *
 
+from colors import *
 
 def perebor(a, b, k):
 	# print('a, b, k:'+str(a)+', '+str(b)+', '+str(k))
@@ -180,13 +181,13 @@ def random_xs(N=ROBOT_NUMBER, minDist=ROBOT_RADIUS*2+1, maxDist=WINDOW_SIZE//ROB
 
 
 def episode_gui(
-		env: Env, w1, w2, window_width=WINDOW_SIZE, window_height=WINDOW_SIZE, min_agent_size=0, fps=FPS, paused=False,
-		killed=None
+		env: Env, w1, w2, window_width=WINDOW_SIZE, window_height=WINDOW_SIZE, min_agent_size=0, fps=FPS, paused=True,
+		killed=KILLED_AGENTS, x_init=X_init, y_init=Y_init
 		):
 	pygame.init()
+	pygame.display.set_caption('Симулятор движения мультиагентных систем')
 	screen = pygame.display.set_mode((window_width, window_height), HWSURFACE | DOUBLEBUF | RESIZABLE)
-	env.reset_to_custom_line_formation(random_xs(env.N, env.robot_radius*2+1, env.width//env.N-2*env.robot_radius), 100)
-	# env.reset_to_unsimmetric_line_formation()
+	env.reset_to_custom_pos(x_init, y_init)
 	if (killed is not None):
 		for i in killed:
 			env.agents[i].is_dead = True
@@ -201,7 +202,7 @@ def episode_gui(
 				quit = True
 				pygame.display.quit()
 				pygame.quit()
-				break
+				return
 			elif event.type == VIDEORESIZE:
 				screen = pygame.display.set_mode(event.size, HWSURFACE | DOUBLEBUF | RESIZABLE)
 				clear_draw_env(env, screen, min_agent_size)
@@ -264,13 +265,13 @@ def episode_gui_only_formation(
 
 def episode_gui_(
 		w1, w2, w3, env_width=ENV_SIZE, env_height=ENV_SIZE, goal_x=GOAL_X, goal_y=GOAL_Y, N=ROBOT_NUMBER,
-		desired_X=DX, desired_Y=DY, leader_x=XL, leader_y=YL, robot_radius=ROBOT_RADIUS,
+		desired_X=DX, desired_Y=DY,  robot_radius=ROBOT_RADIUS,
 		buffer_size=MAX_T, window_width=WINDOW_SIZE,
 		window_height=WINDOW_SIZE, min_agent_size=0, fps=FPS
 ):
 	env = Env(
 		env_width, env_height, goal_x, goal_y, N,
-		desired_X, desired_Y, leader_x, leader_y, robot_radius,
+		desired_X, desired_Y, robot_radius,
 		buffer_size
 	)
 	episode_gui(env, window_width, window_height, w1, w2, w3, min_agent_size, fps)
@@ -283,10 +284,11 @@ def episode_replay(
 		dY=DY, N=ROBOT_NUMBER, min_agent_size=0, fps=FPS
 ):
 	pygame.init()
+	pygame.display.set_caption('Симулятор движения мультиагентных систем')
 
 	screen = pygame.display.set_mode((window_width, window_height), HWSURFACE | DOUBLEBUF | RESIZABLE)
 
-	paused = False
+	paused = True
 	clock = pygame.time.Clock()
 	i = 0
 	while (i < t or paused):
@@ -294,6 +296,7 @@ def episode_replay(
 		for event in pygame.event.get():
 			if event.type == QUIT:
 				pygame.display.quit()
+				return
 			elif event.type == VIDEORESIZE:
 				screen = pygame.display.set_mode(event.size, HWSURFACE | DOUBLEBUF | RESIZABLE)
 				clear_draw_env_(
@@ -317,10 +320,9 @@ def episode_replay(
 			i += 1
 
 		clock.tick(fps)
-	pygame.quit()
 
 
-def episode_replay_from_file(file_name, window_width, window_height, fps=FPS, min_robot_size=0):
+def episode_replay_from_file(file_name, window_width=WINDOW_SIZE, window_height=WINDOW_SIZE, fps=FPS, min_robot_size=0):
 	V, poses, angles, dead, env_width, env_height, goal_x, goal_y, wall, radius, dx, dy, N, \
 	t, _, _ = Env.load_episode_history(
 		file_name

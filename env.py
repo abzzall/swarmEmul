@@ -32,7 +32,7 @@ class Action:
 
 
 class Env:
-	def __init__(			self, width=ENV_SIZE, height=ENV_SIZE, goal_x=GOAL_X, goal_y=GOAL_Y, N=ROBOT_NUMBER,			desired_X=DX, desired_Y=DY,  leader_x=XL, leader_y=YL, robot_radius=ROBOT_RADIUS,			 buffer_size=MAX_T	):
+	def __init__(			self, width=ENV_SIZE, height=ENV_SIZE, goal_x=GOAL_X, goal_y=GOAL_Y, N=ROBOT_NUMBER,			desired_X=DX, desired_Y=DY,  leader_x=10, leader_y=10, robot_radius=ROBOT_RADIUS,			 buffer_size=MAX_T	):
 		self.width = width
 		self.height = height
 
@@ -124,6 +124,16 @@ class Env:
 			self.agents.append(agent)
 		self.reset_leader()
 
+	def reset_to_custom_pos(self, xs: List[int], ys: List[int]):
+		self.agents = []
+		for i in range(self.N):
+			agent = Agent(
+				i,
+				xs[i], ys[i], self.Dx[i], self.Dy[i], radius=self.robot_radius
+			)
+			self.agents.append(agent)
+		self.reset_leader()
+
 	def reset_formation(self):
 		self.agents = []
 		self.xL = self.xL0
@@ -161,7 +171,6 @@ class Env:
 			self.play_step(w1, w2)
 
 	def play_step(self, w1, w2):
-		print('step: ', self.t)
 		moving = False
 		self.check_dead()
 		for i in range(self.N):
