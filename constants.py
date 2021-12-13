@@ -1,41 +1,40 @@
+#радиус робота
 ROBOT_RADIUS = 0.5
+# чувствительность лидара
 SENSOR_RANGE = 5
+# количество лидаров в одном роботе
 SENSOR_DETECTION_COUNT = 12
 
+# начальная координата виртуального лидера
 XL = 100
 YL = 30
 
+# количество роботов
 ROBOT_NUMBER = 9
+
+# координаты роботов в требуемой геометрической фигуре относительно виртуального лидера
 DX = [-SENSOR_RANGE - ROBOT_RADIUS, 0, SENSOR_RANGE + ROBOT_RADIUS, -SENSOR_RANGE - ROBOT_RADIUS, 0,
       SENSOR_RANGE + ROBOT_RADIUS, -ROBOT_RADIUS - SENSOR_RANGE, 0, ROBOT_RADIUS + SENSOR_RANGE]
 DY = [-SENSOR_RANGE - ROBOT_RADIUS, -SENSOR_RANGE - ROBOT_RADIUS, -SENSOR_RANGE - ROBOT_RADIUS, 0, 0, 0,
       SENSOR_RANGE + ROBOT_RADIUS, SENSOR_RANGE + ROBOT_RADIUS, SENSOR_RANGE + ROBOT_RADIUS]
 
+# координаты цели
 GOAL_X = 100
 GOAL_Y = 170
 
+# расположение преграды
 OBSTACLE_POS = (80, 80, 120, 120)
 
+# максимальное количество шагов
 MAX_T=10000
-# colors
-WHITE = (255, 255, 255)
-BLACK = (0, 0, 0)
-RED = (255, 0, 0)
-GREEN = (0, 255, 0)
-BLUE = (0, 0, 255)
-YELLOW = (255, 255, 0)
-AQUA = (128, 255, 255)
-BROWN = (192, 128, 64)
-GRAY = (128, 128, 128)
-INDIGO = (64, 72, 255)
-LIME = (192, 255, 16)
-ORANGE = (255, 128, 40)
-PINK = (192, 64, 192)
-ROSE = (255, 174, 200)
-TURQUOISE = (0, 168, 255)
+
+# размер окна в пикселях
+WINDOW_SIZE=1000
+
+# размер среды
+ENV_SIZE=200
+
+# точность вычисления
+EPSILON=0.00001
 
 FPS=5
-WINDOW_SIZE=1000
-ENV_SIZE=200
-full_report='report2.xls'
-EPSILON=0.00001

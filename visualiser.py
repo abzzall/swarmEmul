@@ -13,7 +13,7 @@ from env import Env
 from env import Wall
 
 from constants import *
-
+from colors import *
 
 def scale(v, scale_koef=1.0) -> int:
 	return ceil(v * scale_koef)
@@ -144,16 +144,18 @@ def clear_draw_env(env: Env, display: Surface, min_agent_size=0):
 def episode_gui(env: Env, w1, w2, w3, window_width=WINDOW_SIZE, window_height=WINDOW_SIZE, min_agent_size=0, fps=FPS):
 	pygame.init()
 	screen = pygame.display.set_mode((window_width, window_height), HWSURFACE | DOUBLEBUF | RESIZABLE)
+	pygame.display.set_caption('Симулятор движения роевых роботов')
 
 	env.reset()
 	paused = True
 	clock = pygame.time.Clock()
 	clear_draw_env(env, screen, min_agent_size)
-
+	quit=False
 	while (not env.is_done or paused):
 		for event in pygame.event.get():
 			if event.type == QUIT:
 				pygame.display.quit()
+				return
 			elif event.type == VIDEORESIZE:
 				screen = pygame.display.set_mode(event.size, HWSURFACE | DOUBLEBUF | RESIZABLE)
 				clear_draw_env(env, screen, min_agent_size)
@@ -170,7 +172,7 @@ def episode_gui(env: Env, w1, w2, w3, window_width=WINDOW_SIZE, window_height=WI
 			clear_draw_env(env, screen, min_agent_size)
 
 		clock.tick(fps)
-	pygame.quit()
+	# pygame.quit()
 
 
 def episode_gui_(
@@ -196,10 +198,10 @@ def episode_replay(
 		dY=DY, N=ROBOT_NUMBER, min_agent_size=0, fps=FPS
 ):
 	pygame.init()
-
+	pygame.display.set_caption('Симулятор движения роевых роботов')
 	screen = pygame.display.set_mode((window_width, window_height), HWSURFACE | DOUBLEBUF | RESIZABLE)
 
-	paused = False
+	paused = True
 	clock = pygame.time.Clock()
 	i = 0
 	while (i < t or paused):
@@ -207,6 +209,7 @@ def episode_replay(
 		for event in pygame.event.get():
 			if event.type == QUIT:
 				pygame.display.quit()
+				return
 			elif event.type == VIDEORESIZE:
 				screen = pygame.display.set_mode(event.size, HWSURFACE | DOUBLEBUF | RESIZABLE)
 				clear_draw_env_(
@@ -230,10 +233,9 @@ def episode_replay(
 			i += 1
 
 		clock.tick(fps)
-	pygame.quit()
 
 
-def episode_replay_from_file(file_name, window_width, window_height, fps=FPS, min_robot_size=0):
+def episode_replay_from_file(file_name, window_width=WINDOW_SIZE, window_height=WINDOW_SIZE, fps=FPS, min_robot_size=0):
 	V, poses, angles, detections, dead, env_width, env_height, goal_x, goal_y, wall, radius, dx, dy, N, \
 	t, _, _  = Env.load_episode_history(
 		file_name
