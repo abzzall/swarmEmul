@@ -1,3 +1,4 @@
+from math import atan2
 from typing import List
 
 from geometry import *
@@ -29,7 +30,8 @@ class Action:
 
     def __eq__(self, other):
         return self.x == other.x and self.y == other.y
-
+    def toStr(self):
+        return ('['+str(self.x)+', '+str(self.y)+']')
 
 class Env:
     def __init__(
@@ -101,8 +103,12 @@ class Env:
             self.play_step(w1, w2, w3)
             yield self.is_done
 
-    def episode(self, w1, w2, w3):
+    def episode(self, w1, w2, w3, killed=[]):
+
         self.reset()
+        for k in killed:
+            self.agents[k].is_dead=True
+        self.reset_leader()
         while not self.is_done:
             self.play_step(w1, w2, w3)
 
@@ -116,13 +122,14 @@ class Env:
             agent = self.agents[i]
             self.pose_history[self.t, agent.id, :] = [agent.x, agent.y]
             self.angle_history[self.t, agent.id] = agent.angle
-            self.dead_history[self.t, agent.id] = False
+            self.dead_history[self.t, agent.id] = agent.is_dead
             if agent.is_dead:
                 continue
             v1 = v_avoid_obs_min_angle(agent, self.sensor_range)
             v2 = v_keep_formation(agent, self.xL, self.yL, w2)
             v3 = v_goal(self.xL, self.yL, self.xG, self.yG, w3)
             v = w1 * v1 + v2 + v3
+            # print('i='+str(agent.id)+'v1='+v1.toStr()+', v2='+v2.toStr()+', v3='+v3.toStr()+',v='+v.toStr())
             agent.move(v)
             self.v_history[self.t, agent.id, :, :] = [[v1.x, v1.y], [v2.x, v2.y], [v3.x, v3.y], [v.x, v.y]]
             if v.active():
@@ -175,11 +182,11 @@ class Env:
                             continue
                         # dist = max(dist-self.robot_radius, 0)
                         min_dist = min(dist, min_dist)
-                if min_dist <= self.sensor_range:
+                if min_dist < self.sensor_range:
                     agent.obs[j] = min_dist
                     agent.detected = True
                 else:
-                    agent.obs[j] = self.sensor_range
+                    agent.obs[j] = -1
             self.detection_history[self.t, agent.id, :] = agent.obs
 
     def save_episode(self, file_name):
@@ -465,7 +472,7 @@ def v_avoid_obs_min_angle(agent: Agent, sensor_range) -> Action:
         return Action(0, 0)
 
     angles = numpy.array(agent.get_lidar_angles())
-    agent.obs[agent.obs == 0] = sensor_range
+    agent.obs[agent.obs == -1] = sensor_range
     nom = 0
     denom = 0
     for i in range(len(angles)):
@@ -476,7 +483,100 @@ def v_avoid_obs_min_angle(agent: Agent, sensor_range) -> Action:
     min_distance = min(agent.obs)
     k = (sensor_range - min_distance) / sensor_range
     return Action(k * cos(turn_angle), k * sin(turn_angle))
+def v_avoid_obs_min_angle_not_null(agent: Agent, sensor_range) -> Action:
+    if not agent.detected:
+        return Action(0, 0)
 
+    angles = numpy.array(agent.get_lidar_angles())
+    detected_ranges= agent.obs[agent.obs != -1]
+    detected_angles=angles[agent.obs!=-1]
+    nom = 0
+    denom = 0
+    for i in range(len(detected_ranges)):
+        nom += detected_angles[i] * detected_ranges[i]
+        denom += detected_ranges[i]
+
+    turn_angle = nom / denom
+    min_distance = min(agent.obs)
+    k = (sensor_range - min_distance) / sensor_range
+    return Action(-k * cos(turn_angle), -k * sin(turn_angle))
+def v_avoid_obs_min(agent: Agent, sensor_range) -> Action:
+    if not agent.detected:
+        return Action(0, 0)
+
+    angles = numpy.array(agent.get_lidar_angles())
+
+
+    turn_angle = opposite_angle( angles[numpy.argmin(agent.obs)])
+    min_distance = min(agent.obs)
+    k = (sensor_range - min_distance) / sensor_range
+    return Action(k * cos(turn_angle), k * sin(turn_angle))
+def v_avoid_obs_min_angle_avg(agent: Agent, sensor_range) -> Action:
+    if not agent.detected:
+        return Action(0, 0)
+
+    angles = numpy.array(agent.get_lidar_angles())
+    agent.obs[agent.obs == -1] = sensor_range
+    sin_s = 0
+    cos_s=0
+    denom = 0
+    for i in range(len(angles)):
+        sin_s += sin(angles[i]) * agent.obs[i]
+        cos_s += cos(angles[i]) * agent.obs[i]
+        denom += agent.obs[i]
+
+    turn_angle = atan2(sin_s, cos_s)
+    min_distance = min(agent.obs)
+    k = (sensor_range - min_distance) / sensor_range
+    return Action(k * cos(turn_angle), k * sin(turn_angle))
+
+def v_avoid_obs_min_angle_avg_notnul(agent: Agent, sensor_range) -> Action:
+    if not agent.detected:
+        return Action(0, 0)
+
+    angles = numpy.array(agent.get_lidar_angles())
+    # agent.obs[agent.obs == 0] = sensor_range
+    detected_angles=angles[agent.obs>=0]
+    detected_ranges=agent.obs[agent.obs>=0]
+
+    sin_s = 0
+    cos_s=0
+    denom = 0
+    for i in range(len(detected_ranges)):
+        sin_s += sin(detected_angles[i]) * detected_ranges[i]
+        cos_s += cos(detected_angles[i]) * detected_ranges[i]
+        denom += detected_ranges[i]
+
+
+    min_distance = min(agent.obs)
+    k = (sensor_range - min_distance) / sensor_range
+    return Action(-k * cos_s/denom, -k * sin_s/denom)
+
+def v_avoid_obs_min_perp(agent: Agent, sensor_range) -> Action:
+    if not agent.detected:
+        return Action(0, 0)
+
+    angles = numpy.array(agent.get_lidar_angles())
+    # agent.obs[agent.obs == 0] = sensor_range
+    detected_angles=angles[agent.obs>=0]
+    detected_ranges=agent.obs[agent.obs>=0]
+
+    sin_s = 0
+    cos_s=0
+    denom = 0
+    for i in range(len(detected_ranges)):
+        sin_s += sin(detected_angles[i]) * detected_ranges[i]
+        cos_s += cos(detected_angles[i]) * detected_ranges[i]
+        denom += detected_ranges[i]
+
+    minangle= angles[ numpy.argmin(agent.obs)]
+
+    min_distance = min(agent.obs)
+    dang_angle= atan2(sin_s/denom, cos_s/denom)
+
+    turn_angle= normAngleMinusPiPi((minangle+pi*0.5) if dang_angle<minangle else (minangle-pi*0.5))
+    k = (sensor_range - min_distance) / sensor_range
+    return Action(k * cos(turn_angle), k * sin(turn_angle))
 
 def v_keep_formation(agent: Agent, leader_x, leader_y, w) -> Action:
     if w == 0:

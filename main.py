@@ -76,7 +76,7 @@ if __name__ == '__main__':
 		print(env.t)
 		env.save_episode(os.path.join(directory, str(run)))
 		run = run + 1
-def fill_report_with_graph(directory, input, outs=[4, 5, 6, 7], full_report=full_report, ax_rows=2, ax_cols=2, row_number=101):
+def fill_report_with_graph(directory, input, outs=[4, 5, 6, 7], full_report="full_report", ax_rows=2, ax_cols=2, row_number=101):
 	df=pandas.read_excel(os.path.join(directory, 'report.xls'))
 	df.set_index('id', inplace=True)
 	print(df.columns)
