@@ -58,3 +58,6 @@ def substract_angle(angle1, angle2):
 
 def abs_differ(angle1, angle2):
 	return abs(substract_angle(angle1, angle2))
+
+def swifted_axis_coord(x, y, x0=0, y0=0, angle=0):
+	return (x-x0)*cos(angle)+(y-y0)*sin(angle), -(x-x0)*sin(angle)+(y-y0)*cos(angle)

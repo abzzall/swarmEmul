@@ -1,5 +1,5 @@
 import random
-from math import atan2
+from math import atan2, acos
 from typing import List
 
 from geometry import *
@@ -76,7 +76,7 @@ class Env:
         self.direction = segmentAngleWithXAxis(self.xL, self.yL, self.xG, self.yG)
         return self.direction
 
-    def get_active_agents(self):
+    def get_active_agents_old(self):
 
         # agent in center
         center_agent = self.get_active_agent()
@@ -105,6 +105,54 @@ class Env:
         left.sensor_active = True
         right.sensor_active = True
         return left, center_agent, right
+
+
+    def get_active_agents(self):
+        X=numpy.zeros(self.N)
+        Y=numpy.zeros(self.N)
+        n=0
+        alive_agent_list=[]
+        for agent in self.agents:
+            agent.sensor_active=False
+            if agent.is_dead:
+                continue
+            X[agent.id], Y[agent.id]=swifted_axis_coord(agent.x, agent.y, self.xL, self.yL, self.direction)
+            alive_agent_list.append(agent)
+            n=n+1
+        if n==0:
+            return None, None, None
+        elif n==1:
+            return None, alive_agent_list[0], None
+        elif n==2:
+            if Y[alive_agent_list[0].id]<Y[alive_agent_list[1].id]:
+                return alive_agent_list[0], None, alive_agent_list[1]
+            else:
+                return alive_agent_list[1], None, alive_agent_list[0]
+
+        def left_cond(agent):
+            return -int(Y[agent.id]/self.robot_radius), X[agent.id]
+
+        def right_cond(agent):
+            return int(Y[agent.id]/self.robot_radius), X[agent.id]
+
+        def center_cond(agent):
+            return int(X[agent.id]/self.robot_radius*0.5), -abs( Y[agent.id])
+
+        left_list=sorted(alive_agent_list, key=left_cond )
+        right_list=sorted(alive_agent_list, key=right_cond)
+        center_list=sorted(alive_agent_list, key=center_cond)
+
+        center=center_list.pop()
+        left=left_list.pop()
+        right=right_list.pop()
+        if center.id==left.id:
+            left=left_list.pop()
+        if center.id==right.id:
+            right=right_list.pop()
+        if left.id==right.id:
+            right=right_list.pop()
+        return left, center, right
+
 
     def get_active_agent(self):
 
@@ -167,10 +215,15 @@ class Env:
         self.reset_leader()
         if abs(self.turn_speed)<0.0001:
             self.turn_speed=0
-        obs = self.observe()
+        obs = self.observe(pi/6)
         turn = 0
         rand_decision = False
         goal_side = substract_angle(segmentAngleWithXAxis(self.xL, self.yL, self.xG, self.yG),self.direction )
+        safe_dist=v+self.robot_radius
+        for r in obs:
+            if r is not None and r<safe_dist:
+                w=pi/2
+
 
         # if obs[1] is not None and ((obs[0] is None and obs[2] is None) or (obs[0] is not None and obs[2] is not None)):#obstacle in front
         #     turn=1 if bool(random.getrandbits(1)) else -1
@@ -182,29 +235,44 @@ class Env:
             if obs[1] is None:
                 self.turn_left=None
                 turn=0
-                # if goal_side > 0:
-                #     turn = 1 if self.turn_speed<=0 else -1
-                # elif goal_side < 0:
-                #     turn = -1 if self.turn_speed>=0 else 1
+
+                if goal_side > 0:
+                    turn = 1 #if self.turn_speed<=0 else -1
+                elif goal_side < 0:
+                    turn = -1 #if self.turn_speed>=0 else 1
             else:
                 rand_decision = True
+
 
         else:
             if obs[0] is None:
                 range_min = obs[2]
+                turn=-1
+                # if self.turn_left == False and abs(self.turn_speed)>w:
+                #     self.turn_speed=0
+                # else:
+                #     turn = -1
                 self.turn_left=True
-                turn = -1 #if self.turn_speed==0 else -1
+                #if self.turn_speed==0 else -1
             elif obs[2] is None:
+
+                # if self.turn_left and abs(self.turn_speed)>w:
+                #     self.turn_speed=0
+                # else:
+                #     turn = 1
+                turn=1
                 range_min = obs[0]
                 self.turn_left=False
-                turn = 1 #if self.turn_speed==0 else 1
+
             else:
                 rand_decision = True
 
         if rand_decision:
             if self.turn_left is not None:
-                turn= 1 if self.turn_left else -1
+                turn= -1 if self.turn_left else 1
             elif self.turn_speed==0:
+                # if goal_side != 0:
+                #     w = min(w, abs_differ(self.direction, segmentAngleWithXAxis(self.xL, self.yL, self.xG, self.yG)))
                 if goal_side > 0:
                     turn = 1
                     range_min = obs[1]
@@ -215,6 +283,7 @@ class Env:
                     turn = 1 if bool(random.getrandbits(1)) else -1
             else:
                 turn = 1 if self.turn_speed > 0 else -1
+            self.turn_left=(turn==-1)
                 # if obs[0]<=self.safe_distance or obs[1]<=self.safe_distance or obs[2]<=self.safe_distance:
                 #     turn=1 if self.turn_speed>0 else -1
                 # else:
@@ -245,18 +314,22 @@ class Env:
             moving = False
         elif dist < v:
             v = dist
-        if goal_side != 0:
-            w = min(w, abs_differ(self.direction, segmentAngleWithXAxis(self.xL, self.yL, self.xG, self.yG)))
-        if turn==0:
-            if self.turn_speed>0:
-                turn=-1
-            elif self.turn_speed<0:
-                turn=1
-            else:
-                if goal_side>0:
-                    self.direction+=w
-                elif goal_side<0:
-                    self.direction-=w
+
+        # if turn==0:
+            # if self.turn_speed>0:
+            #     turn=-1
+            # elif self.turn_speed<0:
+            #     turn=1
+            # if self.turn_speed!=0:
+            #     self.turn_speed=0
+            # else:
+            #     if goal_side != 0:
+            #         w = min(w, abs_differ(self.direction, segmentAngleWithXAxis(self.xL, self.yL, self.xG, self.yG)))
+            #     if goal_side>0:
+            #         self.direction+=w
+            #     elif goal_side<0:
+            #         self.direction-=w
+
         # if turn==0:
         #     if 0 > goal_side > self.turn_speed:
         #         turn = 1
@@ -267,12 +340,18 @@ class Env:
         #     elif goal_side < 0:
         #         turn = -1
 
-        self.turn_speed = normAngleMinusPiPi(self.turn_speed + turn * w)
+        switch_dir=(self.turn_speed>0 and turn<0) or (self.turn_speed<0 and turn>0)
+        if (not switch_dir) or (abs(self.turn_speed)<w):
+            self.turn_speed = normAngleMinusPiPi(self.turn_speed + turn * w)
+        else:
+            self.turn_speed=0
+
         if self.turn_speed>pi/2:
             self.turn_speed=pi/2
         elif self.turn_speed<-pi/2:
             self.turn_speed=-pi/2
-
+        if self.turn_left is None and abs(self.turn_speed)>abs(goal_side):
+            self.turn_speed=goal_side
         self.direction=normAngleMinusPiPi(self.direction+self.turn_speed)
         # if goal_side>0:
         #     self.direction+=wg
@@ -290,7 +369,7 @@ class Env:
                 continue
             agent.move(action)
         self.t += 1
-        if not moving or self.t == self.buffer_size:
+        if not moving or self.t == self.buffer_size or self.checkGoalAchieved():
             self.is_done = True
 
     def reset_leader(self):
@@ -317,14 +396,20 @@ class Env:
                     agent.is_dead = True
                     break
 
-    def observe(self):
+    def observe(self, w=0):
         left, center, right = self.get_active_agents()
 
+
+
         result = []
-        angles= [self.direction-0.5, self.direction, self.direction+0.5]
+        angles= [self.direction-w, self.direction, self.direction+w]
         agents=[left, center, right]
         for i in range(3):
             agent= agents[i]
+            if agent is None:
+                result.append(None)
+                continue
+            agent.sensor_active = True
             agent.detected = False
             angle = angles[i]
             min_dist = self.sensor_range + 1
@@ -371,10 +456,7 @@ class Env:
         return True
 
     def checkGoalAchieved(self):
-        for agent in self.agents:
-            if not agent.is_dead and not (equals(agent.x - agent.dx, self.xG) and equals(agent.y - agent.dy, self.yG)):
-                return False
-        return True
+        return getDistance(self.xL, self.yL, self.xG, self.yG)<EPSILON
 
     def addObstacle(self, from_x, from_y, to_x, to_y):
         self.walls.append(Wall(from_x, from_y, to_x, to_y))

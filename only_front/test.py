@@ -53,11 +53,17 @@ if __name__ == '__main__':
     sensor_range = 20
     ROBOT_RADIUS = 1
     Dx, Dy = desiredXYSquarePattern(N, 5)
-    env = Env(200, 200, 100, 180, N * N, Dx, Dy, sensor_range, 100, 20, ROBOT_RADIUS, SENSOR_DETECTION_COUNT, MAX_T)
-    env.addObstacle(80, 50, 120, 70)
-    env.addObstacle(50, 80, 100, 120)
+    env = Env(250, 250, 210, 160, N * N, Dx, Dy, sensor_range, 20, 20, ROBOT_RADIUS, SENSOR_DETECTION_COUNT, MAX_T)
 
-    env.addObstacle(150, 80, 200, 120)
+
+    env.addObstacle(50, 0, 60, 200)
+
+    env.addObstacle(100, 40, 200, 50)
+    env.addObstacle(100, 60, 110, 250)
+
+
+    env.addObstacle(160, 100, 170, 220)
+    env.addObstacle(160, 100, 250, 110)
 
     # env.addObstacle(50, 80, 150, 120)
     env.agents[0].left=env.agents[3]
@@ -82,7 +88,7 @@ if __name__ == '__main__':
     for i in range(1, N-1):
         for j in range(1, N-1):
             env.agents[i*N+j].sensored=False
-    episode_gui(env, 0.5,math.pi/180, draw_way=True)
+    episode_gui(env, 1,math.pi/6, draw_way=True)
     alive_agent_count = N * N - numpy.sum(env.dead_history[env.t - 1, :])
     t = env.t if (equals(leader_goal_distance(env), 0.0)) else None
     print(t)
