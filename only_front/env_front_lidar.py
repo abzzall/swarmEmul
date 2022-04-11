@@ -236,10 +236,10 @@ class Env:
                 self.turn_left=None
                 turn=0
 
-                if goal_side > 0:
-                    turn = 1 #if self.turn_speed<=0 else -1
-                elif goal_side < 0:
-                    turn = -1 #if self.turn_speed>=0 else 1
+                # if goal_side > 0:
+                #     turn = 1 #if self.turn_speed<=0 else -1
+                # elif goal_side < 0:
+                #     turn = -1 #if self.turn_speed>=0 else 1
             else:
                 rand_decision = True
 
@@ -315,20 +315,20 @@ class Env:
         elif dist < v:
             v = dist
 
-        # if turn==0:
+        if turn==0:
             # if self.turn_speed>0:
             #     turn=-1
             # elif self.turn_speed<0:
             #     turn=1
-            # if self.turn_speed!=0:
-            #     self.turn_speed=0
-            # else:
-            #     if goal_side != 0:
-            #         w = min(w, abs_differ(self.direction, segmentAngleWithXAxis(self.xL, self.yL, self.xG, self.yG)))
-            #     if goal_side>0:
-            #         self.direction+=w
-            #     elif goal_side<0:
-            #         self.direction-=w
+            if self.turn_speed!=0:
+                self.turn_speed=0
+            else:
+                if goal_side != 0:
+                    w = min(w, abs_differ(self.direction, segmentAngleWithXAxis(self.xL, self.yL, self.xG, self.yG)))
+                if goal_side>0:
+                    self.direction+=w
+                elif goal_side<0:
+                    self.direction-=w
 
         # if turn==0:
         #     if 0 > goal_side > self.turn_speed:
@@ -344,14 +344,14 @@ class Env:
         if (not switch_dir) or (abs(self.turn_speed)<w):
             self.turn_speed = normAngleMinusPiPi(self.turn_speed + turn * w)
         else:
-            self.turn_speed=0
+            self.turn_speed=turn*w
 
         if self.turn_speed>pi/2:
             self.turn_speed=pi/2
         elif self.turn_speed<-pi/2:
             self.turn_speed=-pi/2
-        if self.turn_left is None and abs(self.turn_speed)>abs(goal_side):
-            self.turn_speed=goal_side
+        # if self.turn_left is None and abs(self.turn_speed)>abs(goal_side):
+        #     self.turn_speed=goal_side
         self.direction=normAngleMinusPiPi(self.direction+self.turn_speed)
         # if goal_side>0:
         #     self.direction+=wg
@@ -712,4 +712,4 @@ def virtual_leader_position(agents: List[Agent]):
     y = numpy.array(y)
     dx = numpy.array(dx)
     dy = numpy.array(dy)
-    return numpy.mean(x - dx), numpy.mean(y - dy)
+    return numpy.mean(x), numpy.mean(y)
