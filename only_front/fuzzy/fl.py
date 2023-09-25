@@ -1,3 +1,5 @@
+import random
+
 import numpy as np
 from numpy import pi
 
@@ -96,6 +98,8 @@ def membership_goalside_right(w):
 
 
 def fuzzify_lidar(range, sensor_range):
+	if range is None:
+		return 0, 0, 1
 	return membership_lidar_close(range, sensor_range), \
 		membership_lidar_middle(range, sensor_range), \
 		membership_lidar_far(range, sensor_range)
@@ -115,121 +119,191 @@ def fuzzy_goalside(w, W):
 		membership_goalside_right(w)
 
 
+# ANGULAR VELOCITY CHANGE
+# 0: LEFT
+# 1: CENTER
+# 2: RIGHT
 def centroid_defuzzification(results, w):
 	weighted_sum = 0
 	total_area = 0
-	for output, area in results:
-		if output == 'turn right':
+	for output, area in enumerate(results):
+		if output == 2:  # 'turn right':
 			weighted_sum += w * area
 			total_area += area
-		elif output == 'turn left':
+		elif output == 0:  # 'turn left':
 			weighted_sum += -w * area
 			total_area += area
-	# For 'straight', we do not update the weighted_sum as it has no angular change
-
+		elif output == 1:  # todo check if necessary
+			total_area += area
+		elif output == 3:  # random
+			weighted_sum += area * w if bool(random.getrandbits(1)) else -area * w
+			total_area += area
 	if total_area == 0:
 		return 0
 
 	return weighted_sum / total_area
 
 
-def generate_fuzzy_rules_ang_change():
-	res = dict()
-	# CURRENT_ANGULAR_SPEED, GOAL_SIDE, LEFT_LIDAR, CENTER LIDAR, RIGHT LIDAR
-	m = {
-		(0, 0, 0, 0, 0): 1,
-		(0, 0, 0, 0, 1): 1,
-		(0, 0, 0, 0, 2): 1,
-		(0, 0, 0, 1, 0): 1,
-		(0, 0, 0, 1, 1): 1,
-		(0, 0, 0, 1, 2): 1,
-		(0, 0, 0, 2, 0): 1,
-		(0, 0, 0, 2, 1): 1,
-		(0, 0, 0, 2, 2): 1,
-		(0, 0, 1, 0, 0): 1,
-		(0, 0, 1, 0, 1): 1,
-		(0, 0, 1, 0, 2): 1,
-		(0, 0, 1, 1, 0): 0,
-		(0, 0, 1, 1, 1): 1,
-		(0, 0, 2, 0, 0): 1,
-		(0, 0, 2, 0, 1): 0,
-		(0, 0, 2, 0, 2): 1,
-		(0, 0, 2, 1, 0): 0,
-		(0, 0, 2, 1, 1): 0,
-		(0, 0, 2, 1, 2): 0,
-		(0, 0, 2, 2, 0): 0,
-		(0, 0, 2, 2, 1): 0,
-		(0, 0, 2, 2, 2): 0,
-	}
-	res.update(m)
-	# left
-	m = {
-		(1, 0, 0, 0, 0): 2,
-		(1, 0, 0, 0, 1): 2,
-		(1, 0, 0, 0, 2): 2,
-		(1, 0, 0, 1, 0): 2,
-		(1, 0, 0, 1, 1): 2,
-		(1, 0, 0, 1, 2): 2,
-		(1, 0, 0, 2, 0): 2,
-		(1, 0, 0, 2, 1): 2,
-		(1, 0, 0, 2, 2): 2,
-		(1, 0, 1, 0, 0): 2,
-		(1, 0, 1, 0, 1): 2,
-		(1, 0, 1, 0, 2): 2,
-		(1, 0, 1, 1, 0): 1,
-		(1, 0, 1, 1, 1): 2,
-		(1, 0, 1, 1, 2): 2,
-		(1, 0, 1, 2, 0): 2,
-		(1, 0, 1, 2, 1): 2,
-		(1, 0, 1, 2, 2): 2,
-		(1, 0, 2, 0, 0): 1,
-		(1, 0, 2, 0, 1): 2,
-		(1, 0, 2, 0, 2): 2,
-		(1, 0, 2, 1, 0): 1,
-		(1, 0, 2, 1, 1): 0,
-		(1, 0, 2, 1, 2): 0,
-		(1, 0, 2, 2, 0): 2,
-		(1, 0, 2, 2, 1): 0,
-		(1, 0, 2, 2, 2): 0
-	}
-	res.update(m)
+# CURRENT_ANGULAR_SPEED, GOAL_SIDE, LEFT_LIDAR, CENTER LIDAR, RIGHT LIDAR
+# Apply fuzzy rules and compute the output
+def apply_fuzzy_rules(CURRENT_ANGULAR_SPEED, GOAL_SIDE, LEFT_LIDAR, CENTER_LIDAR, RIGHT_LIDAR, fuzzy_rules):
+	output_fuzzy = np.zeros(4)  # Initialize an array to hold the fuzzy output
 
+	for rule in fuzzy_rules:
+		# Rule format: [Temperature_index, Humidity_index, Light_index, CO2_index, Fan_Speed_index]
+		# For each rule, we access the indices corresponding to the temperature, humidity, light intensity, CO2 level,
+		# and fan speed
+
+		# Apply the minimum operator between the fuzzy membership degrees of all input variables in the rule.
+		# This represents the degree of support for this rule.
+		# rule_support = np.minimum(CURRENT_ANGULAR_SPEED[rule[0]], GOAL_SIDE[rule[1]], LEFT_LIDAR[rule[2]],
+		#                           CENTER_LIDAR[rule[3]], RIGHT_LIDAR[rule[4]])
+		rule_support = np.minimum(CURRENT_ANGULAR_SPEED[rule[0]], GOAL_SIDE[rule[1]])
+		rule_support = np.minimum(rule_support, LEFT_LIDAR[rule[2]])
+		rule_support = np.minimum(rule_support, CENTER_LIDAR[rule[3]])
+		rule_support = np.minimum(rule_support, RIGHT_LIDAR[rule[4]])
+		# Update the fuzzy output based on the degree of support for this rule.
+		# Use the maximum operator to capture the OR operation implied by the fuzzy rules.
+		# If a rule provides support for a certain fan speed, it increases the membership degree of that fan speed in 
+		# the output_fuzzy array.
+		output_fuzzy[rule[5]] = np.maximum(output_fuzzy[rule[5]], rule_support)
+	# print(output_fuzzy)
+	return output_fuzzy
+
+
+def generate_fuzzy_rules_ang_change():
+	res = []
+	# CURRENT_ANGULAR_SPEED, GOAL_SIDE, LEFT_LIDAR, CENTER LIDAR, RIGHT LIDAR
+	#
+	m = [
+		[0, 0, 0, 0, 0, 1],
+		[0, 0, 0, 0, 1, 1],
+		[0, 0, 0, 0, 2, 1],
+		[0, 0, 0, 1, 0, 1],
+		[0, 0, 0, 1, 1, 2],
+		[0, 0, 0, 1, 2, 2],
+		[0, 0, 0, 2, 0, 1],
+		[0, 0, 0, 2, 1, 2],
+		[0, 0, 0, 2, 2, 2],
+		[0, 0, 1, 0, 0, 2],
+		[0, 0, 1, 0, 1, 2],
+		[0, 0, 1, 0, 2, 2],
+		[0, 0, 1, 1, 0, 2],
+		[0, 0, 1, 1, 1, 2],
+		[0, 0, 2, 0, 0, 2],
+		[0, 0, 2, 0, 1, 2],
+		[0, 0, 2, 0, 2, 2],
+		[0, 0, 2, 1, 0, 2],
+		[0, 0, 2, 1, 1, 2],
+		[0, 0, 2, 1, 2, 2],
+		[0, 0, 2, 2, 0, 2],
+		[0, 0, 2, 2, 1, 2],
+		[0, 0, 2, 2, 2, 2],
+	]
+	res += m
+	# left
+	m = [
+		[1, 0, 0, 0, 0, 0],
+		[1, 0, 0, 0, 1, 0],
+		[1, 0, 0, 0, 2, 0],
+		[1, 0, 0, 1, 0, 0],
+		[1, 0, 0, 1, 1, 0],
+		[1, 0, 0, 1, 2, 0],
+		[1, 0, 0, 2, 0, 0],
+		[1, 0, 0, 2, 1, 0],
+		[1, 0, 0, 2, 2, 0],
+		[1, 0, 1, 0, 0, 0],
+		[1, 0, 1, 0, 1, 1],
+		[1, 0, 1, 0, 2, 1],
+		[1, 0, 1, 1, 0, 1],
+		[1, 0, 1, 1, 1, 2],
+		[1, 0, 1, 1, 2, 2],
+		[1, 0, 1, 2, 0, 2],
+		[1, 0, 1, 2, 1, 2],
+		[1, 0, 1, 2, 2, 2],
+		[1, 0, 2, 0, 0, 1],
+		[1, 0, 2, 0, 1, 1],
+		[1, 0, 2, 0, 2, 1],
+		[1, 0, 2, 1, 0, 2],
+		[1, 0, 2, 1, 1, 2],
+		[1, 0, 2, 1, 2, 2],
+		[1, 0, 2, 2, 0, 2],
+		[1, 0, 2, 2, 1, 2],
+		[1, 0, 2, 2, 2, 2]
+	]
+	res += m
+	m = []
 	# goal will be ignored
-	for key, value in res.items():
-		res[(key[0], 1, key[2], key[3], key[4])] = value
-		res[(key[0], 2, key[2], key[3], key[4])] = value
+	for row in res:
+		m.append([row[0], 1, row[2], row[3], row[4], row[5]])
+		m.append([row[0], 2, row[2], row[3], row[4], row[5]])
+	res += m
 	# left/sharp left to right/sharp right
-	for key, value in res.items():
-		cur_state = 3 if key[0] == 1 else 4
+	m = []
+	for row in res:
+		cur_state = 3 if row[0] == 1 else 4
+		value = row[5]
 		if value == 0:
 			new_val = 2
 		elif value == 2:
 			new_val = 0
 		else:
 			new_val = value
-		res[(cur_state, key[1], key[4], key[3], key[2])] = new_val
-
-	res[(2, 1, 2, 2, 2)] = 1
+		m.append([cur_state, row[1], row[4], row[3], row[2], new_val])
+	res += m
+	res.append([2, 1, 2, 2, 2, 1])
 	# random
-	m_rand = dict()
+	m_rand = []
 	for i in range(3):
-		m_rand[(2, 1, i, 0, i)] = 3
-		m_rand[(2, 1, i, 1, i)] = 3
+		m_rand.append([2, 1, i, 0, i, 3])
+		m_rand.append([2, 1, i, 1, i, 3])
 	for i in range(2):
-		m_rand[(2, 1, i, 2, i)] = 3
+		m_rand.append([2, 1, i, 2, i, 3])
 
-	res.update(m_rand)
+	res += m_rand
+	m = []
 	# goal_side
-	for key, value in m_rand.items():
-		res[(2, 0, key[2], key[3], key[4])] = 2
-		res[(2, 2, key[2], key[3], key[4])] = 0
-
+	for row in m_rand:
+		m.append([2, 0, row[2], row[3], row[4], 0])
+		m.append([2, 2, row[2], row[3], row[4], 2])
+	res += m
 	for i in range(3):
 		for j in range(i):
 			for k in range(3):
 				for l in range(3):
-					res[(2, k, i, l, j)]=0
-					res[(2, k, j, l, i)]=2
-
+					res.append([2, k, i, l, j, 0])#2, y, 1, x, 0, 0
+					res.append([2, k, j, l, i, 2])
 
 	return res
+
+
+fuzzy_rules = generate_fuzzy_rules_ang_change()
+
+
+def get_velocity(current_angular_speed, goal_side, left_lidar, center_lidar, right_lidar, W, sensor_range):
+	print(current_angular_speed, goal_side, left_lidar, center_lidar, right_lidar, W, sensor_range)
+	current_angular_speed_ = fuzzify_ang(current_angular_speed, W)
+	goal_side_ = fuzzy_goalside(goal_side, W)
+	left_lidar_ = fuzzify_lidar(left_lidar, sensor_range)
+	center_lidar_ = fuzzify_lidar(center_lidar, sensor_range)
+	right_lidar_ = fuzzify_lidar(right_lidar, sensor_range)
+	print(
+		current_angular_speed_,
+		goal_side_,
+		left_lidar_,
+		center_lidar_,
+		right_lidar_
+		)
+	fuzzy_result = apply_fuzzy_rules(
+		current_angular_speed_,
+		goal_side_,
+		left_lidar_,
+		center_lidar_,
+		right_lidar_,
+		fuzzy_rules
+	)
+	print(fuzzy_result)
+	return centroid_defuzzification(
+		fuzzy_result,
+		W
+	)
