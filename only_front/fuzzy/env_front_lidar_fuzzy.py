@@ -224,13 +224,20 @@ class Env:
 		#         self.turn_perp=False
 		#     else:
 		#         self.turn_perp=True
-		obs = self.observe(w)
+		obs = self.observe(pi/6)
 		turn = 0
 		rand_decision = False
+		print('______________________________________________________________________________________________')
+		print(f'old_direction={self.direction}')
+		print(f'old_turn_speed={self.turn_speed}')
 		goal_side = substract_angle(segmentAngleWithXAxis(self.xL, self.yL, self.xG, self.yG), self.direction)
+
 		dAngularVel = get_velocity(self.turn_speed, goal_side, obs[0], obs[1], obs[2], w, self.sensor_range)
+		print(f'dV={dAngularVel}')
 		self.turn_speed += dAngularVel
+		print(f'turn_speed={self.turn_speed}')
 		self.direction = normAngleMinusPiPi(self.direction + self.turn_speed)
+		print(f'direction={self.direction}')
 		# if goal_side>0:
 		#     self.direction+=wg
 		# elif goal_side<0:

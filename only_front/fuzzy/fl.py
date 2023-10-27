@@ -54,23 +54,23 @@ def triangular_membership_left(x, l, m):
 
 
 def membership_lidar_far(range, sensor_range):
-	return triangular_membership_right(range, sensor_range / 2, sensor_range)
+	return range is None #triangular_membership_right(range, sensor_range / 2, sensor_range)
 
 
 def membership_lidar_middle(range, sensor_range):
-	return triangular_membership(range, sensor_range / 4, sensor_range / 2, sensor_range * 3 / 4)
+	return triangular_membership_right(range, 0, sensor_range)
 
 
 def membership_lidar_close(range, sensor_range):
-	return triangular_membership_left(range, 0, sensor_range / 2)
+	return triangular_membership_left(range, 0, sensor_range)
 
 
 def membership_ang_sharp_left(w, W):
-	return triangular_membership_left(w, -pi / 2, 2 * W - pi / 2)
+	return triangular_membership_left(w, -pi / 2-W,  - pi / 4)
 
 
 def membership_ang_left(w, W):
-	return triangular_membership(w, W - pi / 2, -W, 0)
+	return triangular_membership(w, -pi/4, -W, 0)
 
 
 def membership_ang_straight(w, W):
@@ -78,11 +78,11 @@ def membership_ang_straight(w, W):
 
 
 def membership_ang_right(w, W):
-	return triangular_membership(w, 0, W, pi / 2 - W)
+	return triangular_membership(w, 0, W, pi / 4)
 
 
 def membership_ang_sharp_right(w, W):
-	return triangular_membership_right(w, pi / 2 - 2 * W, pi / 2)
+	return triangular_membership_right(w, pi / 4, pi / 2-W)
 
 
 def membership_goalside_left(w):
@@ -102,7 +102,7 @@ def fuzzify_lidar(range, sensor_range):
 		return 0, 0, 1
 	return membership_lidar_close(range, sensor_range), \
 		membership_lidar_middle(range, sensor_range), \
-		membership_lidar_far(range, sensor_range)
+		0
 
 
 def fuzzify_ang(w, W):
@@ -173,13 +173,13 @@ def apply_fuzzy_rules(CURRENT_ANGULAR_SPEED, GOAL_SIDE, LEFT_LIDAR, CENTER_LIDAR
 
 def generate_fuzzy_rules_ang_change():
 	res = []
-	# CURRENT_ANGULAR_SPEED, GOAL_SIDE, LEFT_LIDAR, CENTER LIDAR, RIGHT LIDAR
+	# CURRENT_ANGULAR_SPEED, GOAL_SIDE, LE FT_LIDAR, CENTER LIDAR, RIGHT LIDAR
 	#
 	m = [
-		[0, 0, 0, 0, 0, 1],
-		[0, 0, 0, 0, 1, 1],
-		[0, 0, 0, 0, 2, 1],
-		[0, 0, 0, 1, 0, 1],
+		[0, 0, 0, 0, 0, 2],
+		[0, 0, 0, 0, 1, 2],
+		[0, 0, 0, 0, 2, 2],
+		[0, 0, 0, 1, 0, 2],
 		[0, 0, 0, 1, 1, 2],
 		[0, 0, 0, 1, 2, 2],
 		[0, 0, 0, 2, 0, 1],
@@ -190,6 +190,10 @@ def generate_fuzzy_rules_ang_change():
 		[0, 0, 1, 0, 2, 2],
 		[0, 0, 1, 1, 0, 2],
 		[0, 0, 1, 1, 1, 2],
+		[0, 0, 1, 1, 2, 2],
+		[0, 0, 1, 2, 0, 2],
+		[0, 0, 1, 2, 1, 2],
+		[0, 0, 1, 2, 2, 2],
 		[0, 0, 2, 0, 0, 2],
 		[0, 0, 2, 0, 1, 2],
 		[0, 0, 2, 0, 2, 2],
@@ -207,15 +211,15 @@ def generate_fuzzy_rules_ang_change():
 		[1, 0, 0, 0, 1, 0],
 		[1, 0, 0, 0, 2, 0],
 		[1, 0, 0, 1, 0, 0],
-		[1, 0, 0, 1, 1, 0],
-		[1, 0, 0, 1, 2, 0],
-		[1, 0, 0, 2, 0, 0],
-		[1, 0, 0, 2, 1, 0],
-		[1, 0, 0, 2, 2, 0],
-		[1, 0, 1, 0, 0, 0],
-		[1, 0, 1, 0, 1, 1],
-		[1, 0, 1, 0, 2, 1],
-		[1, 0, 1, 1, 0, 1],
+		[1, 0, 0, 1, 1, 2],
+		[1, 0, 0, 1, 2, 2],
+		[1, 0, 0, 2, 0, 2],
+		[1, 0, 0, 2, 1, 2],
+		[1, 0, 0, 2, 2, 2],
+		[1, 0, 1, 0, 0, 1],
+		[1, 0, 1, 0, 1, 0],
+		[1, 0, 1, 0, 2, 0],
+		[1, 0, 1, 1, 0, 0],
 		[1, 0, 1, 1, 1, 2],
 		[1, 0, 1, 1, 2, 2],
 		[1, 0, 1, 2, 0, 2],
@@ -229,7 +233,8 @@ def generate_fuzzy_rules_ang_change():
 		[1, 0, 2, 1, 2, 2],
 		[1, 0, 2, 2, 0, 2],
 		[1, 0, 2, 2, 1, 2],
-		[1, 0, 2, 2, 2, 2]
+
+		# [1, 0, 2, 2, 2, 1]
 	]
 	res += m
 	m = []
@@ -262,17 +267,46 @@ def generate_fuzzy_rules_ang_change():
 
 	res += m_rand
 	m = []
-	# goal_side
+	# goal_sided
 	for row in m_rand:
 		m.append([2, 0, row[2], row[3], row[4], 0])
 		m.append([2, 2, row[2], row[3], row[4], 2])
+	m.append([1, 0, 2, 2, 2, 1])
+	m.append([3, 0, 2, 2, 2, 0])
+	m.append([1, 2, 2, 2, 2, 2])
+	m.append([3, 2, 2, 2, 2, 1])
+	m.append([2, 0, 2, 2, 2, 0])
+	m.append([2, 2, 2, 2, 2, 2])
+	m.append([1, 1, 2, 2, 2, 2])
+	# m.append([1, 2, 2, 2, 2, 2])
+	m.append([3, 1, 2, 2, 2, 0])
+	# m.append([3, 2, 2, 2, 2, 0])
+
 	res += m
+
 	for i in range(3):
 		for j in range(i):
 			for k in range(3):
 				for l in range(3):
 					res.append([2, k, i, l, j, 0])#2, y, 1, x, 0, 0
 					res.append([2, k, j, l, i, 2])
+
+	# for row in res:
+	# 	print(row)
+	# CURRENT_ANGULAR_SPEED, GOAL_SIDE, LEFT_LIDAR, CENTER LIDAR, RIGHT LIDAR
+	for c in range(5):
+		for g in range(3):
+			for l in range(3):
+				for s in range(3):
+					for r in range(3):
+						found=[]
+						for row in res:
+							if row[0]==c and row[1]==g and row[2]==l and row[3]==s and row[4]==r:
+								found.append(row)
+						if len(found)==1:
+							continue
+						else:
+							print(c, g, l, s, r, found)
 
 	return res
 
@@ -281,19 +315,24 @@ fuzzy_rules = generate_fuzzy_rules_ang_change()
 
 
 def get_velocity(current_angular_speed, goal_side, left_lidar, center_lidar, right_lidar, W, sensor_range):
-	print(current_angular_speed, goal_side, left_lidar, center_lidar, right_lidar, W, sensor_range)
+	# print(current_angular_speed, goal_side, left_lidar, center_lidar, right_lidar, W, sensor_range)
 	current_angular_speed_ = fuzzify_ang(current_angular_speed, W)
+	right_lidar_ = fuzzify_lidar(right_lidar, sensor_range)
 	goal_side_ = fuzzy_goalside(goal_side, W)
 	left_lidar_ = fuzzify_lidar(left_lidar, sensor_range)
 	center_lidar_ = fuzzify_lidar(center_lidar, sensor_range)
-	right_lidar_ = fuzzify_lidar(right_lidar, sensor_range)
-	print(
-		current_angular_speed_,
-		goal_side_,
-		left_lidar_,
-		center_lidar_,
-		right_lidar_
-		)
+	print(f'current_angular_speed={current_angular_speed}, fuzzy:{current_angular_speed_}')
+	print(f'goalside={goal_side}, fuzzy:{goal_side_}')
+	print(f'left_lidar={left_lidar}, fuzzy:{left_lidar_}')
+	print(f'center_lidar={center_lidar}, fuzzy:{center_lidar_}')
+	print(f'right_lidar={right_lidar}, fuzzy:{right_lidar_}')
+	# print(
+	# 	current_angular_speed_,
+	# 	goal_side_,
+	# 	left_lidar_,
+	# 	center_lidar_,
+	# 	right_lidar_
+	# 	)
 	fuzzy_result = apply_fuzzy_rules(
 		current_angular_speed_,
 		goal_side_,
@@ -302,7 +341,6 @@ def get_velocity(current_angular_speed, goal_side, left_lidar, center_lidar, rig
 		right_lidar_,
 		fuzzy_rules
 	)
-	print(fuzzy_result)
 	return centroid_defuzzification(
 		fuzzy_result,
 		W
