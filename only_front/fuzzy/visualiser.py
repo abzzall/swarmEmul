@@ -11,12 +11,12 @@ from pygame.locals import *
 
 import constants
 from geometry import equals, getDistance
-from only_front.env_front_lidar import Agent
-from only_front.env_front_lidar import Drawable
-from only_front.env_front_lidar import Env
-from only_front.env_front_lidar import Wall
+from only_front.fuzzy.env_front_lidar_fuzzy import Agent
+from only_front.fuzzy.env_front_lidar_fuzzy import Drawable
+from only_front.fuzzy.env_front_lidar_fuzzy import Env
+from only_front.fuzzy.env_front_lidar_fuzzy import Wall
 
-from constants import *
+from only_front.fuzzy.constants import *
 from colors import *
 
 import pandas
@@ -100,9 +100,9 @@ def env_surface(env: Env, scale_koef=1.0, min_agent_size=0, draw_way=False) -> S
     for wall in env.walls:
         draw_wall(wall, display, scale_koef)
 
-    blit_surface(pygame.image.load('../img/goal.png'), display, env.xG, env.yG, scale_koef)
+    blit_surface(pygame.image.load('../../img/goal.png'), display, env.xG, env.yG, scale_koef)
     if not (env.xL is None or env.yL is None):
-        blit_surface(pygame.image.load('../img/leader.png'), display, env.xL, env.yL, scale_koef)
+        blit_surface(pygame.image.load('../../img/leader.png'), display, env.xL, env.yL, scale_koef)
 
     return display
 
@@ -189,7 +189,7 @@ def episode_gui(env: Env, v, w,  window_width=WINDOW_SIZE, window_height=WINDOW_
     clock = pygame.time.Clock()
     clear_draw_env(env, screen, min_agent_size)
     quit = False
-    while (not quit or paused):
+    while (not quit):
         for event in pygame.event.get():
             if event.type == QUIT:
                 quit=True
@@ -223,11 +223,12 @@ def episode_gui(env: Env, v, w,  window_width=WINDOW_SIZE, window_height=WINDOW_
                 elif event.key == K_h:
                     screen.blit(pygame.transform.flip(screen, True, False), (0, 0))
                     pygame.display.flip()
-
-        if not paused and not env.is_done:
-            env.play_step(v, w)
-            clear_draw_env(env, screen, min_agent_size, draw_way)
-
+        if paused:
+            continue
+        env.play_step(v, w)
+        clear_draw_env(env, screen, min_agent_size, draw_way)
+        if env.is_done:
+            quit=True
         clock.tick(fps)
 
 
@@ -324,113 +325,26 @@ def desiredXYSquarePattern(N: int, d=SENSOR_RANGE):
     return X, Y
 
 if __name__ == '__main__':
-    N = 10
-    sensor_range = 5
+    N = 3
+    mini_sensor_range = 3
+    sensor_range=20.0
     ROBOT_RADIUS = 1
-    Dx, Dy = desiredXYSquarePattern(N, sensor_range + ROBOT_RADIUS)
-    env = Env(500, 500, 250, 450, N * N, Dx, Dy, SENSOR_RANGE, 250, 50, ROBOT_RADIUS, SENSOR_DETECTION_COUNT, MAX_T)
-    env.addObstacle(200, 200, 300, 300)
-    df = pandas.DataFrame(columns=['id', 'Вес скорости избегания столкновении',
-                                   'Вес скорости достижения цели',
-                                   'Количество выживших агентов', 'Количество итерации',
-                                   ])
-    df.set_index('id', inplace=True)
-    # episode_gui_(5, 1, 1)
-    # N = 2
-    # sensor_range = 20
-    # ROBOT_RADIUS = 1
-    # Dx, Dy = desiredXYSquarePattern(N, sensor_range + ROBOT_RADIUS)
-    # env = Env(500, 500, 250, 450, N * N, Dx, Dy, SENSOR_RANGE, 250, 50, ROBOT_RADIUS, SENSOR_DETECTION_COUNT, MAX_T)
+    Dx, Dy = desiredXYSquarePattern(N, mini_sensor_range + ROBOT_RADIUS)
+    # env = Env(500, 500, 250, 450, N * N, Dx, Dy, sensor_range, 250, 50, ROBOT_RADIUS, SENSOR_DETECTION_COUNT, MAX_T)
     # env.addObstacle(200, 200, 300, 300)
-    # env.addObstacle(60, 80, 40, 120)
 
-    # env.addObstacle(350, 200, 400, 250)
-    # env.addObstacle(100, 200, 150, 250)
-    # episode_gui(env,15, 1, 1, draw_way=True)
-    W = numpy.array(range(101))/10
-    file_to_check=open('test10.txt', 'w')
-    run = 0
-    dir_name = os.path.join('../..', 'run10')
-    for w2 in W:
-        # print('w1=' + str(w1))
-        for w1 in W:
-            # print('w2=' + str(w2))
-            # history['v'], history['pose'], history['angle'], history['detection'], history['dead'], \
-            # history['width'], \
-            # history['height'], history['goal_x'], history['goal_y'], history['wall'], history['radius'], history[
-            #     'dx'], history['dy'], history['N'], history['t'], history['leader_x'], history['leader_y']
-            ep_file = os.path.join(dir_name, str(run) + '_' + str(w1) + '_' + str(w2) + '.npz')
-            # v, pose, angle, detection, dead, width, height, goalX, goalY, wall, radius, dX, dY, N, t, lX, lX=Env.load_episode_history(ep_file)
-            # episode_gui(env, 3, 1)
-            env.episode(w1, w2)
-            env.save_episode(os.path.join(dir_name, str(run) + '_' + str(w1) + '_' + str(w2)))
-            alive_agent_count = N * N - numpy.sum(env.dead_history[env.t - 1, :])
-            t = env.t if env.checkGoalAchieved() else None
-            row = [w1, w2,  alive_agent_count, t]
-            print(row)
-            if(t is None and alive_agent_count>0):
-                print(row, file=file_to_check, flush=True)
-            df.loc[run] = row
-            run = run + 1
-    file_to_check.close()
-    df = df.apply(pandas.to_numeric, errors='coerce')
-    df.to_excel(os.path.join(dir_name, 'report.xlsx'))
-    df['Вес скорости избегания столкновении'] = df['Вес скорости избегания столкновении'].astype(float)
-    df['Вес скорости достижения цели'] = df['Вес скорости достижения цели'].astype(float)
-    df['Количество выживших агентов'] = df['Количество выживших агентов'].astype(float)
-    df['Количество итерации'] = df['Количество итерации'].astype(float)
+    env = Env(250, 250, 210, 160, N * N, Dx, Dy, sensor_range, 20, 20, ROBOT_RADIUS, SENSOR_DETECTION_COUNT, 5000000)
+    # env.addObstacle(50, 0, 60, 200)
+    env.addObstacle(50, 0, 60, 80)
+    env.addObstacle(50, 100, 60, 220)
 
-    fig = plt.figure()
-    ax = fig.add_subplot(111, projection='3d')
-    ax.plot_trisurf(df['Вес скорости избегания столкновении'], df['Вес скорости достижения цели'],
-                    df['Количество выживших агентов'], cmap=cm.jet, linewidth=0.2)
-    fig.savefig(os.path.join(dir_name, 'stat', 'quantity.png'))
+    env.addObstacle(100, 40, 220, 50)
 
-    fig = plt.figure()
-    ax = fig.add_subplot(111, projection='3d')
-    ax.plot_trisurf(df['Вес скорости избегания столкновении'], df['Вес скорости достижения цели'],
-                    df['Количество итерации'], cmap=cm.jet, linewidth=0.2)
-    fig.savefig(os.path.join(dir_name, 'stat', 'time.png'))
+    env.addObstacle(100, 50, 110, 180)
+    env.addObstacle(100, 200, 110, 250)
 
-    for w in W:
-        df1 = df[df['Вес скорости избегания столкновении'] == w]
-        df3 = df[df['Вес скорости достижения цели'] == w]
-        #
-        df1.plot( x='Вес скорости достижения цели', y='Количество выживших агентов').get_figure().savefig(os.path.join(dir_name, 'stat', 'quantity', 'w1', str(w)+'.png'))
+    env.addObstacle(170, 100, 180, 220)
 
-        df1.plot(x='Вес скорости достижения цели', y='Количество итерации').get_figure().savefig(os.path.join(dir_name, 'stat', 'time', 'w1', str(w)+'.png'))
+    env.addObstacle(200, 100, 250, 110)
 
-
-        # df2.plot(x='Вес скорости избегания столкновении', y='Вес скорости достижения цели', z='Количество выживших агентов').get_figure().savefig(os.path.join(dir_name, 'stat', 'quantity', 'w2', str(w)+'.png'))
-        #
-        # df2.plot(x='Вес скорости избегания столкновении', y='Вес скорости достижения цели', z='Количество итерации').get_figure().savefig(os.path.join(dir_name, 'stat', 'time', 'w2', str(w)+'.png'))
-
-        df3.plot(x='Вес скорости избегания столкновении', y='Количество выживших агентов').get_figure().savefig(os.path.join(dir_name, 'stat', 'quantity', 'w3', str(w)+'.png'))
-
-        df3.plot(x='Вес скорости избегания столкновении', y='Количество итерации').get_figure().savefig(os.path.join(dir_name, 'stat', 'time', 'w3', str(w)+'.png'))
-        # df1.plot(x='Вес скорости достижения цели', y='Количество выживших агентов')
-        # # fig = plt.figure()
-        # # ax = fig.add_subplot(111, projection='3d')
-        # # ax.plot_trisurf(df1['Вес скорости сохранения формы'], df1['Вес скорости достижения цели'],
-        # #                 df1['Количество выживших агентов'], cmap=cm.jet, linewidth=0.2)
-        # # fig.savefig(os.path.join(dir_name, 'stat', 'quantity', 'w1', str(w) + '.png'))
-        #
-        #
-        # fig = plt.figure()
-        # ax = fig.add_subplot(111, projection='3d')
-        # ax.plot_trisurf(df1['Вес скорости сохранения формы'], df1['Вес скорости достижения цели'],
-        #                 df1['Количество итерации'], cmap=cm.jet, linewidth=0.2)
-        # fig.savefig(os.path.join(dir_name, 'stat', 'time', 'w1', str(w) + '.png'))
-        #
-        #
-        # fig = plt.figure()
-        # ax = fig.add_subplot(111, projection='3d')
-        # ax.plot_trisurf(df3['Вес скорости сохранения формы'], df3['Вес скорости избегания столкновении'],
-        #                 df3['Количество выживших агентов'], cmap=cm.jet, linewidth=0.2)
-        # fig.savefig(os.path.join(dir_name, 'stat', 'quantity', 'w3', str(w) + '.png'))
-        #
-        # fig = plt.figure()
-        # ax = fig.add_subplot(111, projection='3d')
-        # ax.plot_trisurf(df3['Вес скорости сохранения формы'], df3['Вес скорости избегания столкновении'],
-        #                 df3['Количество итерации'], cmap=cm.jet, linewidth=0.2)
-        # fig.savefig(os.path.join(dir_name, 'stat', 'time', 'w3', str(w) + '.png'))
+    episode_gui(env, 1, pi/12, draw_way=True)
