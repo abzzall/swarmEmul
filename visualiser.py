@@ -20,6 +20,7 @@ from colors import *
 
 
 def scale(v, scale_koef=1.0) -> int:
+
     return ceil(v * scale_koef)
 
 
@@ -40,6 +41,7 @@ def draw_wall(wall: Wall, display: Surface, scale_koef=1.0, color=BLACK):
 
 
 def draw_wall__(length_x, length_y, center_x, center_y, display: Surface, scale_koef=1.0, color=BLACK):
+
     w = scale(length_x, scale_koef)
     h = scale(length_y, scale_koef)
     image = Surface((w, h))
@@ -166,11 +168,12 @@ def episode_gui(env: Env, w1, w2, w3, window_width=WINDOW_SIZE, window_height=WI
     screen = pygame.display.set_mode((window_width, window_height), HWSURFACE | DOUBLEBUF | RESIZABLE)
     pygame.display.set_caption('Симулятор движения роевых роботов')
 
-    env.reset()
+    # env.reset()
     paused = True
     clock = pygame.time.Clock()
     clear_draw_env(env, screen, min_agent_size)
     quit = False
+    env.reset_leader()
     while (not env.is_done or paused):
         for event in pygame.event.get():
             if event.type == QUIT:
