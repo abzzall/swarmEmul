@@ -1,0 +1,406 @@
+,Current Angular Velocity,Goal Side,Left Observer Detection,Center Observer Detection,Right Observer Detection,Output
+0,Sharp Left,Left,Close,Close,Close,Right
+1,Sharp Left,Left,Close,Close,Far,Right
+2,Sharp Left,Left,Close,Close,Not Detected,Right
+3,Sharp Left,Left,Close,Far,Close,Right
+4,Sharp Left,Left,Close,Far,Far,Right
+5,Sharp Left,Left,Close,Far,Not Detected,Right
+6,Sharp Left,Left,Close,Not Detected,Close,Straight
+7,Sharp Left,Left,Close,Not Detected,Far,Right
+8,Sharp Left,Left,Close,Not Detected,Not Detected,Right
+9,Sharp Left,Left,Far,Close,Close,Right
+10,Sharp Left,Left,Far,Close,Far,Right
+11,Sharp Left,Left,Far,Close,Not Detected,Right
+12,Sharp Left,Left,Far,Far,Close,Right
+13,Sharp Left,Left,Far,Far,Far,Right
+14,Sharp Left,Left,Far,Far,Not Detected,Right
+15,Sharp Left,Left,Far,Not Detected,Close,Right
+16,Sharp Left,Left,Far,Not Detected,Far,Right
+17,Sharp Left,Left,Far,Not Detected,Not Detected,Right
+18,Sharp Left,Left,Not Detected,Close,Close,Right
+19,Sharp Left,Left,Not Detected,Close,Far,Right
+20,Sharp Left,Left,Not Detected,Close,Not Detected,Right
+21,Sharp Left,Left,Not Detected,Far,Close,Right
+22,Sharp Left,Left,Not Detected,Far,Far,Right
+23,Sharp Left,Left,Not Detected,Far,Not Detected,Right
+24,Sharp Left,Left,Not Detected,Not Detected,Close,Right
+25,Sharp Left,Left,Not Detected,Not Detected,Far,Right
+26,Sharp Left,Left,Not Detected,Not Detected,Not Detected,Right
+27,Left,Left,Close,Close,Close,Left
+28,Left,Left,Close,Close,Far,Left
+29,Left,Left,Close,Close,Not Detected,Right
+30,Left,Left,Close,Far,Close,Left
+31,Left,Left,Close,Far,Far,Left
+32,Left,Left,Close,Far,Not Detected,Right
+33,Left,Left,Close,Not Detected,Close,Left
+34,Left,Left,Close,Not Detected,Far,Left
+35,Left,Left,Close,Not Detected,Not Detected,Right
+36,Left,Left,Far,Close,Close,Left
+37,Left,Left,Far,Close,Far,Left
+38,Left,Left,Far,Close,Not Detected,Left
+39,Left,Left,Far,Far,Close,Left
+40,Left,Left,Far,Far,Far,Straight
+41,Left,Left,Far,Far,Not Detected,Right
+42,Left,Left,Far,Not Detected,Close,Left
+43,Left,Left,Far,Not Detected,Far,Straight
+44,Left,Left,Far,Not Detected,Not Detected,Right
+45,Left,Left,Not Detected,Close,Close,Left
+46,Left,Left,Not Detected,Close,Far,Left
+47,Left,Left,Not Detected,Close,Not Detected,Left
+48,Left,Left,Not Detected,Far,Close,Left
+49,Left,Left,Not Detected,Far,Far,Left
+50,Left,Left,Not Detected,Far,Not Detected,Straight
+51,Left,Left,Not Detected,Not Detected,Close,Left
+52,Left,Left,Not Detected,Not Detected,Far,Left
+53,Sharp Left,Front,Close,Close,Close,Right
+54,Sharp Left,Right,Close,Close,Close,Right
+55,Sharp Left,Front,Close,Close,Far,Right
+56,Sharp Left,Right,Close,Close,Far,Right
+57,Sharp Left,Front,Close,Close,Not Detected,Right
+58,Sharp Left,Right,Close,Close,Not Detected,Right
+59,Sharp Left,Front,Close,Far,Close,Right
+60,Sharp Left,Right,Close,Far,Close,Right
+61,Sharp Left,Front,Close,Far,Far,Right
+62,Sharp Left,Right,Close,Far,Far,Right
+63,Sharp Left,Front,Close,Far,Not Detected,Right
+64,Sharp Left,Right,Close,Far,Not Detected,Right
+65,Sharp Left,Front,Close,Not Detected,Close,Straight
+66,Sharp Left,Right,Close,Not Detected,Close,Straight
+67,Sharp Left,Front,Close,Not Detected,Far,Right
+68,Sharp Left,Right,Close,Not Detected,Far,Right
+69,Sharp Left,Front,Close,Not Detected,Not Detected,Right
+70,Sharp Left,Right,Close,Not Detected,Not Detected,Right
+71,Sharp Left,Front,Far,Close,Close,Right
+72,Sharp Left,Right,Far,Close,Close,Right
+73,Sharp Left,Front,Far,Close,Far,Right
+74,Sharp Left,Right,Far,Close,Far,Right
+75,Sharp Left,Front,Far,Close,Not Detected,Right
+76,Sharp Left,Right,Far,Close,Not Detected,Right
+77,Sharp Left,Front,Far,Far,Close,Right
+78,Sharp Left,Right,Far,Far,Close,Right
+79,Sharp Left,Front,Far,Far,Far,Right
+80,Sharp Left,Right,Far,Far,Far,Right
+81,Sharp Left,Front,Far,Far,Not Detected,Right
+82,Sharp Left,Right,Far,Far,Not Detected,Right
+83,Sharp Left,Front,Far,Not Detected,Close,Right
+84,Sharp Left,Right,Far,Not Detected,Close,Right
+85,Sharp Left,Front,Far,Not Detected,Far,Right
+86,Sharp Left,Right,Far,Not Detected,Far,Right
+87,Sharp Left,Front,Far,Not Detected,Not Detected,Right
+88,Sharp Left,Right,Far,Not Detected,Not Detected,Right
+89,Sharp Left,Front,Not Detected,Close,Close,Right
+90,Sharp Left,Right,Not Detected,Close,Close,Right
+91,Sharp Left,Front,Not Detected,Close,Far,Right
+92,Sharp Left,Right,Not Detected,Close,Far,Right
+93,Sharp Left,Front,Not Detected,Close,Not Detected,Right
+94,Sharp Left,Right,Not Detected,Close,Not Detected,Right
+95,Sharp Left,Front,Not Detected,Far,Close,Right
+96,Sharp Left,Right,Not Detected,Far,Close,Right
+97,Sharp Left,Front,Not Detected,Far,Far,Right
+98,Sharp Left,Right,Not Detected,Far,Far,Right
+99,Sharp Left,Front,Not Detected,Far,Not Detected,Right
+100,Sharp Left,Right,Not Detected,Far,Not Detected,Right
+101,Sharp Left,Front,Not Detected,Not Detected,Close,Right
+102,Sharp Left,Right,Not Detected,Not Detected,Close,Right
+103,Sharp Left,Front,Not Detected,Not Detected,Far,Right
+104,Sharp Left,Right,Not Detected,Not Detected,Far,Right
+105,Sharp Left,Front,Not Detected,Not Detected,Not Detected,Right
+106,Sharp Left,Right,Not Detected,Not Detected,Not Detected,Right
+107,Left,Front,Close,Close,Close,Left
+108,Left,Right,Close,Close,Close,Left
+109,Left,Front,Close,Close,Far,Left
+110,Left,Right,Close,Close,Far,Left
+111,Left,Front,Close,Close,Not Detected,Right
+112,Left,Right,Close,Close,Not Detected,Right
+113,Left,Front,Close,Far,Close,Left
+114,Left,Right,Close,Far,Close,Left
+115,Left,Front,Close,Far,Far,Left
+116,Left,Right,Close,Far,Far,Left
+117,Left,Front,Close,Far,Not Detected,Right
+118,Left,Right,Close,Far,Not Detected,Right
+119,Left,Front,Close,Not Detected,Close,Left
+120,Left,Right,Close,Not Detected,Close,Left
+121,Left,Front,Close,Not Detected,Far,Left
+122,Left,Right,Close,Not Detected,Far,Left
+123,Left,Front,Close,Not Detected,Not Detected,Right
+124,Left,Right,Close,Not Detected,Not Detected,Right
+125,Left,Front,Far,Close,Close,Left
+126,Left,Right,Far,Close,Close,Left
+127,Left,Front,Far,Close,Far,Left
+128,Left,Right,Far,Close,Far,Left
+129,Left,Front,Far,Close,Not Detected,Left
+130,Left,Right,Far,Close,Not Detected,Left
+131,Left,Front,Far,Far,Close,Left
+132,Left,Right,Far,Far,Close,Left
+133,Left,Front,Far,Far,Far,Straight
+134,Left,Right,Far,Far,Far,Straight
+135,Left,Front,Far,Far,Not Detected,Right
+136,Left,Right,Far,Far,Not Detected,Right
+137,Left,Front,Far,Not Detected,Close,Left
+138,Left,Right,Far,Not Detected,Close,Left
+139,Left,Front,Far,Not Detected,Far,Straight
+140,Left,Right,Far,Not Detected,Far,Straight
+141,Left,Front,Far,Not Detected,Not Detected,Right
+142,Left,Right,Far,Not Detected,Not Detected,Right
+143,Left,Front,Not Detected,Close,Close,Left
+144,Left,Right,Not Detected,Close,Close,Left
+145,Left,Front,Not Detected,Close,Far,Left
+146,Left,Right,Not Detected,Close,Far,Left
+147,Left,Front,Not Detected,Close,Not Detected,Left
+148,Left,Right,Not Detected,Close,Not Detected,Left
+149,Left,Front,Not Detected,Far,Close,Left
+150,Left,Right,Not Detected,Far,Close,Left
+151,Left,Front,Not Detected,Far,Far,Left
+152,Left,Right,Not Detected,Far,Far,Left
+153,Left,Front,Not Detected,Far,Not Detected,Straight
+154,Left,Right,Not Detected,Far,Not Detected,Straight
+155,Left,Front,Not Detected,Not Detected,Close,Left
+156,Left,Right,Not Detected,Not Detected,Close,Left
+157,Left,Front,Not Detected,Not Detected,Far,Left
+158,Left,Right,Not Detected,Not Detected,Far,Left
+159,Sharp Right,Left,Close,Close,Close,Left
+160,Sharp Right,Left,Far,Close,Close,Left
+161,Sharp Right,Left,Not Detected,Close,Close,Left
+162,Sharp Right,Left,Close,Far,Close,Left
+163,Sharp Right,Left,Far,Far,Close,Left
+164,Sharp Right,Left,Not Detected,Far,Close,Left
+165,Sharp Right,Left,Close,Not Detected,Close,Straight
+166,Sharp Right,Left,Far,Not Detected,Close,Left
+167,Sharp Right,Left,Not Detected,Not Detected,Close,Left
+168,Sharp Right,Left,Close,Close,Far,Left
+169,Sharp Right,Left,Far,Close,Far,Left
+170,Sharp Right,Left,Not Detected,Close,Far,Left
+171,Sharp Right,Left,Close,Far,Far,Left
+172,Sharp Right,Left,Far,Far,Far,Left
+173,Sharp Right,Left,Not Detected,Far,Far,Left
+174,Sharp Right,Left,Close,Not Detected,Far,Left
+175,Sharp Right,Left,Far,Not Detected,Far,Left
+176,Sharp Right,Left,Not Detected,Not Detected,Far,Left
+177,Sharp Right,Left,Close,Close,Not Detected,Left
+178,Sharp Right,Left,Far,Close,Not Detected,Left
+179,Sharp Right,Left,Not Detected,Close,Not Detected,Left
+180,Sharp Right,Left,Close,Far,Not Detected,Left
+181,Sharp Right,Left,Far,Far,Not Detected,Left
+182,Sharp Right,Left,Not Detected,Far,Not Detected,Left
+183,Sharp Right,Left,Close,Not Detected,Not Detected,Left
+184,Sharp Right,Left,Far,Not Detected,Not Detected,Left
+185,Sharp Right,Left,Not Detected,Not Detected,Not Detected,Left
+186,Right,Left,Close,Close,Close,Right
+187,Right,Left,Far,Close,Close,Right
+188,Right,Left,Not Detected,Close,Close,Left
+189,Right,Left,Close,Far,Close,Right
+190,Right,Left,Far,Far,Close,Right
+191,Right,Left,Not Detected,Far,Close,Left
+192,Right,Left,Close,Not Detected,Close,Right
+193,Right,Left,Far,Not Detected,Close,Right
+194,Right,Left,Not Detected,Not Detected,Close,Left
+195,Right,Left,Close,Close,Far,Right
+196,Right,Left,Far,Close,Far,Right
+197,Right,Left,Not Detected,Close,Far,Right
+198,Right,Left,Close,Far,Far,Right
+199,Right,Left,Far,Far,Far,Straight
+200,Right,Left,Not Detected,Far,Far,Left
+201,Right,Left,Close,Not Detected,Far,Right
+202,Right,Left,Far,Not Detected,Far,Straight
+203,Right,Left,Not Detected,Not Detected,Far,Left
+204,Right,Left,Close,Close,Not Detected,Right
+205,Right,Left,Far,Close,Not Detected,Right
+206,Right,Left,Not Detected,Close,Not Detected,Right
+207,Right,Left,Close,Far,Not Detected,Right
+208,Right,Left,Far,Far,Not Detected,Right
+209,Right,Left,Not Detected,Far,Not Detected,Straight
+210,Right,Left,Close,Not Detected,Not Detected,Right
+211,Right,Left,Far,Not Detected,Not Detected,Right
+212,Sharp Right,Front,Close,Close,Close,Left
+213,Sharp Right,Right,Close,Close,Close,Left
+214,Sharp Right,Front,Far,Close,Close,Left
+215,Sharp Right,Right,Far,Close,Close,Left
+216,Sharp Right,Front,Not Detected,Close,Close,Left
+217,Sharp Right,Right,Not Detected,Close,Close,Left
+218,Sharp Right,Front,Close,Far,Close,Left
+219,Sharp Right,Right,Close,Far,Close,Left
+220,Sharp Right,Front,Far,Far,Close,Left
+221,Sharp Right,Right,Far,Far,Close,Left
+222,Sharp Right,Front,Not Detected,Far,Close,Left
+223,Sharp Right,Right,Not Detected,Far,Close,Left
+224,Sharp Right,Front,Close,Not Detected,Close,Straight
+225,Sharp Right,Right,Close,Not Detected,Close,Straight
+226,Sharp Right,Front,Far,Not Detected,Close,Left
+227,Sharp Right,Right,Far,Not Detected,Close,Left
+228,Sharp Right,Front,Not Detected,Not Detected,Close,Left
+229,Sharp Right,Right,Not Detected,Not Detected,Close,Left
+230,Sharp Right,Front,Close,Close,Far,Left
+231,Sharp Right,Right,Close,Close,Far,Left
+232,Sharp Right,Front,Far,Close,Far,Left
+233,Sharp Right,Right,Far,Close,Far,Left
+234,Sharp Right,Front,Not Detected,Close,Far,Left
+235,Sharp Right,Right,Not Detected,Close,Far,Left
+236,Sharp Right,Front,Close,Far,Far,Left
+237,Sharp Right,Right,Close,Far,Far,Left
+238,Sharp Right,Front,Far,Far,Far,Left
+239,Sharp Right,Right,Far,Far,Far,Left
+240,Sharp Right,Front,Not Detected,Far,Far,Left
+241,Sharp Right,Right,Not Detected,Far,Far,Left
+242,Sharp Right,Front,Close,Not Detected,Far,Left
+243,Sharp Right,Right,Close,Not Detected,Far,Left
+244,Sharp Right,Front,Far,Not Detected,Far,Left
+245,Sharp Right,Right,Far,Not Detected,Far,Left
+246,Sharp Right,Front,Not Detected,Not Detected,Far,Left
+247,Sharp Right,Right,Not Detected,Not Detected,Far,Left
+248,Sharp Right,Front,Close,Close,Not Detected,Left
+249,Sharp Right,Right,Close,Close,Not Detected,Left
+250,Sharp Right,Front,Far,Close,Not Detected,Left
+251,Sharp Right,Right,Far,Close,Not Detected,Left
+252,Sharp Right,Front,Not Detected,Close,Not Detected,Left
+253,Sharp Right,Right,Not Detected,Close,Not Detected,Left
+254,Sharp Right,Front,Close,Far,Not Detected,Left
+255,Sharp Right,Right,Close,Far,Not Detected,Left
+256,Sharp Right,Front,Far,Far,Not Detected,Left
+257,Sharp Right,Right,Far,Far,Not Detected,Left
+258,Sharp Right,Front,Not Detected,Far,Not Detected,Left
+259,Sharp Right,Right,Not Detected,Far,Not Detected,Left
+260,Sharp Right,Front,Close,Not Detected,Not Detected,Left
+261,Sharp Right,Right,Close,Not Detected,Not Detected,Left
+262,Sharp Right,Front,Far,Not Detected,Not Detected,Left
+263,Sharp Right,Right,Far,Not Detected,Not Detected,Left
+264,Sharp Right,Front,Not Detected,Not Detected,Not Detected,Left
+265,Sharp Right,Right,Not Detected,Not Detected,Not Detected,Left
+266,Right,Front,Close,Close,Close,Right
+267,Right,Right,Close,Close,Close,Right
+268,Right,Front,Far,Close,Close,Right
+269,Right,Right,Far,Close,Close,Right
+270,Right,Front,Not Detected,Close,Close,Left
+271,Right,Right,Not Detected,Close,Close,Left
+272,Right,Front,Close,Far,Close,Right
+273,Right,Right,Close,Far,Close,Right
+274,Right,Front,Far,Far,Close,Right
+275,Right,Right,Far,Far,Close,Right
+276,Right,Front,Not Detected,Far,Close,Left
+277,Right,Right,Not Detected,Far,Close,Left
+278,Right,Front,Close,Not Detected,Close,Right
+279,Right,Right,Close,Not Detected,Close,Right
+280,Right,Front,Far,Not Detected,Close,Right
+281,Right,Right,Far,Not Detected,Close,Right
+282,Right,Front,Not Detected,Not Detected,Close,Left
+283,Right,Right,Not Detected,Not Detected,Close,Left
+284,Right,Front,Close,Close,Far,Right
+285,Right,Right,Close,Close,Far,Right
+286,Right,Front,Far,Close,Far,Right
+287,Right,Right,Far,Close,Far,Right
+288,Right,Front,Not Detected,Close,Far,Right
+289,Right,Right,Not Detected,Close,Far,Right
+290,Right,Front,Close,Far,Far,Right
+291,Right,Right,Close,Far,Far,Right
+292,Right,Front,Far,Far,Far,Straight
+293,Right,Right,Far,Far,Far,Straight
+294,Right,Front,Not Detected,Far,Far,Left
+295,Right,Right,Not Detected,Far,Far,Left
+296,Right,Front,Close,Not Detected,Far,Right
+297,Right,Right,Close,Not Detected,Far,Right
+298,Right,Front,Far,Not Detected,Far,Straight
+299,Right,Right,Far,Not Detected,Far,Straight
+300,Right,Front,Not Detected,Not Detected,Far,Left
+301,Right,Right,Not Detected,Not Detected,Far,Left
+302,Right,Front,Close,Close,Not Detected,Right
+303,Right,Right,Close,Close,Not Detected,Right
+304,Right,Front,Far,Close,Not Detected,Right
+305,Right,Right,Far,Close,Not Detected,Right
+306,Right,Front,Not Detected,Close,Not Detected,Right
+307,Right,Right,Not Detected,Close,Not Detected,Right
+308,Right,Front,Close,Far,Not Detected,Right
+309,Right,Right,Close,Far,Not Detected,Right
+310,Right,Front,Far,Far,Not Detected,Right
+311,Right,Right,Far,Far,Not Detected,Right
+312,Right,Front,Not Detected,Far,Not Detected,Straight
+313,Right,Right,Not Detected,Far,Not Detected,Straight
+314,Right,Front,Close,Not Detected,Not Detected,Right
+315,Right,Right,Close,Not Detected,Not Detected,Right
+316,Right,Front,Far,Not Detected,Not Detected,Right
+317,Right,Right,Far,Not Detected,Not Detected,Right
+318,Straight,Front,Not Detected,Not Detected,Not Detected,Straight
+319,Straight,Front,Close,Close,Close,Random
+320,Straight,Front,Close,Far,Close,Random
+321,Straight,Front,Far,Close,Far,Random
+322,Straight,Front,Far,Far,Far,Random
+323,Straight,Front,Not Detected,Close,Not Detected,Random
+324,Straight,Front,Not Detected,Far,Not Detected,Random
+325,Straight,Front,Close,Not Detected,Close,Random
+326,Straight,Front,Far,Not Detected,Far,Random
+327,Straight,Left,Close,Close,Close,Left
+328,Straight,Right,Close,Close,Close,Right
+329,Straight,Left,Close,Far,Close,Left
+330,Straight,Right,Close,Far,Close,Right
+331,Straight,Left,Far,Close,Far,Left
+332,Straight,Right,Far,Close,Far,Right
+333,Straight,Left,Far,Far,Far,Left
+334,Straight,Right,Far,Far,Far,Right
+335,Straight,Left,Not Detected,Close,Not Detected,Left
+336,Straight,Right,Not Detected,Close,Not Detected,Right
+337,Straight,Left,Not Detected,Far,Not Detected,Left
+338,Straight,Right,Not Detected,Far,Not Detected,Right
+339,Straight,Left,Close,Not Detected,Close,Left
+340,Straight,Right,Close,Not Detected,Close,Right
+341,Straight,Left,Far,Not Detected,Far,Left
+342,Straight,Right,Far,Not Detected,Far,Right
+343,Left,Left,Not Detected,Not Detected,Not Detected,Straight
+344,Right,Left,Not Detected,Not Detected,Not Detected,Left
+345,Left,Right,Not Detected,Not Detected,Not Detected,Right
+346,Right,Right,Not Detected,Not Detected,Not Detected,Straight
+347,Straight,Left,Not Detected,Not Detected,Not Detected,Left
+348,Straight,Right,Not Detected,Not Detected,Not Detected,Right
+349,Left,Front,Not Detected,Not Detected,Not Detected,Right
+350,Right,Front,Not Detected,Not Detected,Not Detected,Left
+351,Straight,Left,Far,Close,Close,Left
+352,Straight,Left,Close,Close,Far,Right
+353,Straight,Left,Far,Far,Close,Left
+354,Straight,Left,Close,Far,Far,Right
+355,Straight,Left,Far,Not Detected,Close,Left
+356,Straight,Left,Close,Not Detected,Far,Right
+357,Straight,Front,Far,Close,Close,Left
+358,Straight,Front,Close,Close,Far,Right
+359,Straight,Front,Far,Far,Close,Left
+360,Straight,Front,Close,Far,Far,Right
+361,Straight,Front,Far,Not Detected,Close,Left
+362,Straight,Front,Close,Not Detected,Far,Right
+363,Straight,Right,Far,Close,Close,Left
+364,Straight,Right,Close,Close,Far,Right
+365,Straight,Right,Far,Far,Close,Left
+366,Straight,Right,Close,Far,Far,Right
+367,Straight,Right,Far,Not Detected,Close,Left
+368,Straight,Right,Close,Not Detected,Far,Right
+369,Straight,Left,Not Detected,Close,Close,Left
+370,Straight,Left,Close,Close,Not Detected,Right
+371,Straight,Left,Not Detected,Far,Close,Left
+372,Straight,Left,Close,Far,Not Detected,Right
+373,Straight,Left,Not Detected,Not Detected,Close,Left
+374,Straight,Left,Close,Not Detected,Not Detected,Right
+375,Straight,Front,Not Detected,Close,Close,Left
+376,Straight,Front,Close,Close,Not Detected,Right
+377,Straight,Front,Not Detected,Far,Close,Left
+378,Straight,Front,Close,Far,Not Detected,Right
+379,Straight,Front,Not Detected,Not Detected,Close,Left
+380,Straight,Front,Close,Not Detected,Not Detected,Right
+381,Straight,Right,Not Detected,Close,Close,Left
+382,Straight,Right,Close,Close,Not Detected,Right
+383,Straight,Right,Not Detected,Far,Close,Left
+384,Straight,Right,Close,Far,Not Detected,Right
+385,Straight,Right,Not Detected,Not Detected,Close,Left
+386,Straight,Right,Close,Not Detected,Not Detected,Right
+387,Straight,Left,Not Detected,Close,Far,Left
+388,Straight,Left,Far,Close,Not Detected,Right
+389,Straight,Left,Not Detected,Far,Far,Left
+390,Straight,Left,Far,Far,Not Detected,Right
+391,Straight,Left,Not Detected,Not Detected,Far,Left
+392,Straight,Left,Far,Not Detected,Not Detected,Right
+393,Straight,Front,Not Detected,Close,Far,Left
+394,Straight,Front,Far,Close,Not Detected,Right
+395,Straight,Front,Not Detected,Far,Far,Left
+396,Straight,Front,Far,Far,Not Detected,Right
+397,Straight,Front,Not Detected,Not Detected,Far,Left
+398,Straight,Front,Far,Not Detected,Not Detected,Right
+399,Straight,Right,Not Detected,Close,Far,Left
+400,Straight,Right,Far,Close,Not Detected,Right
+401,Straight,Right,Not Detected,Far,Far,Left
+402,Straight,Right,Far,Far,Not Detected,Right
+403,Straight,Right,Not Detected,Not Detected,Far,Left
+404,Straight,Right,Far,Not Detected,Not Detected,Right
