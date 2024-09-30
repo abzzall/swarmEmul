@@ -1,0 +1,456 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="SELECTIVE" />
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="a44219f1-fa28-4052-8e36-1c8041780192" name="Changes" comment="dif_sensor pkg" />
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Python Script" />
+        <option value="Jupyter Notebook" />
+      </list>
+    </option>
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="GitHubPullRequestSearchHistory">{
+  &quot;lastFilter&quot;: {
+    &quot;state&quot;: &quot;OPEN&quot;,
+    &quot;assignee&quot;: &quot;abzzall&quot;
+  }
+}</component>
+  <component name="GithubPullRequestsUISettings">{
+  &quot;selectedUrlAndAccountId&quot;: {
+    &quot;url&quot;: &quot;https://github.com/abzzall/swarmEmul.git&quot;,
+    &quot;accountId&quot;: &quot;9fc1d007-3fe5-4b1c-b57c-efd7fcc2e6dc&quot;
+  }
+}</component>
+  <component name="ProjectColorInfo">{
+  &quot;customColor&quot;: &quot;&quot;,
+  &quot;associatedIndex&quot;: 3
+}</component>
+  <component name="ProjectId" id="2YkGwjNzMImbYUeYJKL0ui3CaMs" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;Python.test (1).executor&quot;: &quot;Run&quot;,
+    &quot;Python.test.executor&quot;: &quot;Run&quot;,
+    &quot;Python.visualiser (1).executor&quot;: &quot;Run&quot;,
+    &quot;Python.visualiser (2).executor&quot;: &quot;Run&quot;,
+    &quot;Python.visualiser (3).executor&quot;: &quot;Run&quot;,
+    &quot;Python.visualiser.executor&quot;: &quot;Run&quot;,
+    &quot;Python.viz_test.executor&quot;: &quot;Run&quot;,
+    &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;WebServerToolWindowFactoryState&quot;: &quot;false&quot;,
+    &quot;dart.analysis.tool.window.visible&quot;: &quot;false&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;master&quot;,
+    &quot;last_opened_file_path&quot;: &quot;C:/Users/abzza/Documents/workspace/swarmEmul&quot;,
+    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
+    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable&quot;,
+    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
+  }
+}</component>
+  <component name="PyConsoleOptionsProvider">
+    <option name="myPythonConsoleState">
+      <console-settings module-name="swarmEmul" is-module-sdk="true">
+        <option name="myUseModuleSdk" value="true" />
+        <option name="myModuleName" value="swarmEmul" />
+      </console-settings>
+    </option>
+    <option name="myUseExistingConsole" value="true" />
+    <option name="myCommandQueueEnabled" value="true" />
+  </component>
+  <component name="RecentsManager">
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="C:\Users\qyzyr\PycharmProjects\swarmEmul\only_front\fuzzy" />
+      <recent name="C:\Users\qyzyr\workspace\swarmEmul\fuzzy_bahavioral" />
+      <recent name="C:\Users\qyzyr\workspace\swarmEmul\only_front\fuzzy\fuzzy_bahavioral" />
+    </key>
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="C:\Users\qyzyr\workspace\swarmEmul" />
+    </key>
+  </component>
+  <component name="RunManager" selected="Python.visualiser (3)">
+    <configuration name="visualiser (1)" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+      <module name="swarmEmul" />
+      <option name="ENV_FILES" value="" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/visualiser.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
+    <configuration name="visualiser (2)" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+      <module name="swarmEmul" />
+      <option name="ENV_FILES" value="" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/only_front/fuzzy" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/only_front/fuzzy/visualiser.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
+    <configuration name="visualiser (3)" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+      <module name="swarmEmul" />
+      <option name="ENV_FILES" value="" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/only_front" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/only_front/visualiser.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
+    <configuration name="visualiser" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+      <module name="swarmEmul" />
+      <option name="ENV_FILES" value="" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/fuzzy_bahavioral" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/fuzzy_bahavioral/visualiser.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
+    <configuration name="viz_test" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+      <module name="swarmEmul" />
+      <option name="ENV_FILES" value="" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/viz_test.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
+    <recent_temporary>
+      <list>
+        <item itemvalue="Python.visualiser (3)" />
+        <item itemvalue="Python.visualiser (2)" />
+        <item itemvalue="Python.visualiser (1)" />
+        <item itemvalue="Python.visualiser" />
+        <item itemvalue="Python.viz_test" />
+      </list>
+    </recent_temporary>
+  </component>
+  <component name="SharedIndexes">
+    <attachedChunks>
+      <set>
+        <option value="bundled-js-predefined-d6986cc7102b-5c90d61e3bab-JavaScript-PY-242.23339.19" />
+        <option value="bundled-python-sdk-0029f7779945-399fe30bd8c1-com.jetbrains.pycharm.pro.sharedIndexes.bundled-PY-242.23339.19" />
+      </set>
+    </attachedChunks>
+  </component>
+  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="a44219f1-fa28-4052-8e36-1c8041780192" name="Changes" comment="" />
+      <created>1701062405624</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1701062405624</updated>
+      <workItem from="1701062407722" duration="45000" />
+      <workItem from="1701062459488" duration="1156000" />
+      <workItem from="1701109585144" duration="304000" />
+      <workItem from="1701161320162" duration="1519000" />
+      <workItem from="1701188363588" duration="6703000" />
+      <workItem from="1701341203309" duration="19000" />
+      <workItem from="1702288873982" duration="2773000" />
+      <workItem from="1702540088498" duration="489000" />
+      <workItem from="1702975341210" duration="23000" />
+      <workItem from="1704707969499" duration="1252000" />
+      <workItem from="1705049783855" duration="98000" />
+      <workItem from="1705049913187" duration="596000" />
+      <workItem from="1705244410471" duration="1198000" />
+      <workItem from="1705311725271" duration="605000" />
+      <workItem from="1705314349550" duration="1791000" />
+      <workItem from="1705496456567" duration="590000" />
+      <workItem from="1705987117689" duration="451000" />
+      <workItem from="1706376815327" duration="1487000" />
+      <workItem from="1706604076437" duration="780000" />
+      <workItem from="1706692372259" duration="278000" />
+      <workItem from="1706692776703" duration="15083000" />
+      <workItem from="1706716330880" duration="10529000" />
+      <workItem from="1706730307006" duration="14707000" />
+      <workItem from="1706793917800" duration="998000" />
+      <workItem from="1707244353148" duration="601000" />
+      <workItem from="1707246397069" duration="591000" />
+      <workItem from="1707285933577" duration="13115000" />
+      <workItem from="1707304046849" duration="19000" />
+      <workItem from="1707304083283" duration="11559000" />
+      <workItem from="1707908627321" duration="3909000" />
+      <workItem from="1707991006232" duration="616000" />
+      <workItem from="1708267230733" duration="1192000" />
+      <workItem from="1708668861231" duration="2241000" />
+      <workItem from="1709111467031" duration="4686000" />
+      <workItem from="1709487850435" duration="1273000" />
+      <workItem from="1709492727442" duration="593000" />
+      <workItem from="1709532349518" duration="596000" />
+      <workItem from="1709622184188" duration="3495000" />
+      <workItem from="1709701232632" duration="1344000" />
+      <workItem from="1709704979024" duration="9871000" />
+      <workItem from="1710022424004" duration="327000" />
+      <workItem from="1710061918600" duration="596000" />
+      <workItem from="1710168408186" duration="699000" />
+      <workItem from="1710477314661" duration="1203000" />
+      <workItem from="1710562155873" duration="4896000" />
+      <workItem from="1710864678875" duration="2909000" />
+      <workItem from="1711634738765" duration="6269000" />
+      <workItem from="1711643405717" duration="3007000" />
+      <workItem from="1712754460537" duration="3053000" />
+      <workItem from="1713259515107" duration="2664000" />
+      <workItem from="1713299216290" duration="16000" />
+      <workItem from="1713344686196" duration="156000" />
+      <workItem from="1713346313807" duration="963000" />
+      <workItem from="1715889536954" duration="1002000" />
+      <workItem from="1716025305391" duration="4427000" />
+      <workItem from="1716153427362" duration="592000" />
+      <workItem from="1716156006755" duration="661000" />
+      <workItem from="1716176994600" duration="580000" />
+      <workItem from="1716404438701" duration="2451000" />
+      <workItem from="1716656982660" duration="7945000" />
+      <workItem from="1716703459118" duration="715000" />
+      <workItem from="1716704204300" duration="11022000" />
+      <workItem from="1716837030072" duration="63000" />
+      <workItem from="1720502528115" duration="2025000" />
+      <workItem from="1720590105932" duration="1533000" />
+      <workItem from="1720769042865" duration="1293000" />
+      <workItem from="1720782457841" duration="11000" />
+      <workItem from="1720783337045" duration="1372000" />
+      <workItem from="1720982631575" duration="568000" />
+      <workItem from="1721062238927" duration="6575000" />
+      <workItem from="1721106944356" duration="471000" />
+      <workItem from="1721107438383" duration="595000" />
+      <workItem from="1721108075601" duration="87000" />
+      <workItem from="1721108178126" duration="89000" />
+      <workItem from="1721108311832" duration="259000" />
+      <workItem from="1721108588630" duration="367000" />
+      <workItem from="1721109113347" duration="1748000" />
+      <workItem from="1721110971743" duration="3913000" />
+      <workItem from="1721116276161" duration="10314000" />
+      <workItem from="1721161593754" duration="633000" />
+      <workItem from="1721203451567" duration="3454000" />
+      <workItem from="1721220609152" duration="1518000" />
+      <workItem from="1721222417816" duration="1062000" />
+      <workItem from="1721233883097" duration="10921000" />
+      <workItem from="1721271789836" duration="14095000" />
+      <workItem from="1721305249499" duration="2008000" />
+      <workItem from="1721309254457" duration="876000" />
+      <workItem from="1721319487887" duration="9634000" />
+      <workItem from="1721563979654" duration="485000" />
+      <workItem from="1721564516807" duration="85000" />
+      <workItem from="1722439559440" duration="1015000" />
+      <workItem from="1722859402791" duration="2000" />
+      <workItem from="1722882540020" duration="347000" />
+      <workItem from="1722883108636" duration="614000" />
+      <workItem from="1723199208369" duration="12000" />
+      <workItem from="1724180228694" duration="957000" />
+      <workItem from="1724182646443" duration="591000" />
+      <workItem from="1727631181887" duration="2373000" />
+      <workItem from="1727639645260" duration="21000" />
+      <workItem from="1727686950470" duration="3906000" />
+      <workItem from="1727709398965" duration="1269000" />
+      <workItem from="1727710695601" duration="1553000" />
+    </task>
+    <task id="LOCAL-00001" summary="fuzzy behavioral initial">
+      <option name="closed" value="true" />
+      <created>1706694836984</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1706694836984</updated>
+    </task>
+    <task id="LOCAL-00002" summary="not reset in episode gui">
+      <option name="closed" value="true" />
+      <created>1727709788261</created>
+      <option name="number" value="00002" />
+      <option name="presentableId" value="LOCAL-00002" />
+      <option name="project" value="LOCAL" />
+      <updated>1727709788261</updated>
+    </task>
+    <task id="LOCAL-00003" summary="dif_sensor pkg">
+      <option name="closed" value="true" />
+      <created>1727710009678</created>
+      <option name="number" value="00003" />
+      <option name="presentableId" value="LOCAL-00003" />
+      <option name="project" value="LOCAL" />
+      <updated>1727710009678</updated>
+    </task>
+    <option name="localTasksCounter" value="4" />
+    <servers />
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="3" />
+  </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="OPEN_GENERIC_TABS">
+      <map>
+        <entry key="268cb79a-754c-4cdb-b6ff-dde7340c1146" value="TOOL_WINDOW" />
+        <entry key="4bc6b12c-6911-40f5-a517-c69cc43da202" value="TOOL_WINDOW" />
+      </map>
+    </option>
+    <option name="TAB_STATES">
+      <map>
+        <entry key="268cb79a-754c-4cdb-b6ff-dde7340c1146">
+          <value>
+            <State />
+          </value>
+        </entry>
+        <entry key="4bc6b12c-6911-40f5-a517-c69cc43da202">
+          <value>
+            <State>
+              <option name="CUSTOM_BOOLEAN_PROPERTIES">
+                <map>
+                  <entry key="Show.Git.Branches" value="true" />
+                </map>
+              </option>
+              <option name="FILTERS">
+                <map>
+                  <entry key="branch">
+                    <value>
+                      <list>
+                        <option value="master" />
+                      </list>
+                    </value>
+                  </entry>
+                </map>
+              </option>
+            </State>
+          </value>
+        </entry>
+        <entry key="MAIN">
+          <value>
+            <State>
+              <option name="FILTERS">
+                <map>
+                  <entry key="branch">
+                    <value>
+                      <list>
+                        <option value="master" />
+                      </list>
+                    </value>
+                  </entry>
+                </map>
+              </option>
+              <option name="TEXT_FILTER_SETTINGS">
+                <TextFilterSettings>
+                  <option name="REGEX" value="true" />
+                </TextFilterSettings>
+              </option>
+            </State>
+          </value>
+        </entry>
+      </map>
+    </option>
+  </component>
+  <component name="VcsManagerConfiguration">
+    <MESSAGE value="fuzzy behavioral initial" />
+    <MESSAGE value="not reset in episode gui" />
+    <MESSAGE value="dif_sensor pkg" />
+    <option name="LAST_COMMIT_MESSAGE" value="dif_sensor pkg" />
+  </component>
+  <component name="XDebuggerManager">
+    <breakpoint-manager>
+      <breakpoints>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/fuzzy_bahavioral/env_fuzzy_behavioral.py</url>
+          <line>375</line>
+          <option name="timeStamp" value="4" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="jupyter-line">
+          <url>notebook://C:/Users/qyzyr/PycharmProjects/swarmEmul/only_front/fuzzy/experiments.ipynb</url>
+          <line>608</line>
+          <option name="timeStamp" value="5" />
+        </line-breakpoint>
+      </breakpoints>
+    </breakpoint-manager>
+  </component>
+  <component name="com.intellij.coverage.CoverageDataManagerImpl">
+    <SUITE FILE_PATH="coverage/swarmEmul$test__1_.coverage" NAME="test (1) Coverage Results" MODIFIED="1709711902746" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/swarmEmul$visualiser.coverage" NAME="visualiser Coverage Results" MODIFIED="1721271886626" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/fuzzy_bahavioral" />
+    <SUITE FILE_PATH="coverage/swarmEmul$test.coverage" NAME="test Coverage Results" MODIFIED="1713346510026" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/only_front" />
+    <SUITE FILE_PATH="coverage/swarmEmul$visualiser__2_.coverage" NAME="visualiser (2) Coverage Results" MODIFIED="1727688075824" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/only_front/fuzzy" />
+    <SUITE FILE_PATH="coverage/swarmEmul$visualiser__3_.coverage" NAME="visualiser (3) Coverage Results" MODIFIED="1727689378226" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/only_front" />
+    <SUITE FILE_PATH="coverage/swarmEmul$viz_test.coverage" NAME="viz_test Coverage Results" MODIFIED="1709711672750" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/swarmEmul$visualiser__1_.coverage" NAME="visualiser (1) Coverage Results" MODIFIED="1727687200433" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+  </component>
+</project>
